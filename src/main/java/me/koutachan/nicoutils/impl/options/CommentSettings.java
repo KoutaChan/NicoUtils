@@ -1,8 +1,8 @@
 package me.koutachan.nicoutils.impl.options;
 
 import me.koutachan.nicoutils.impl.builder.NicoVideoBuilder;
-import me.koutachan.nicoutils.impl.options.enums.CommentLabel;
-import me.koutachan.nicoutils.impl.options.enums.Language;
+import me.koutachan.nicoutils.impl.options.enums.video.CommentLabel;
+import me.koutachan.nicoutils.impl.options.enums.video.Language;
 
 public class CommentSettings {
     private boolean getComment, addNGScoreInfo;

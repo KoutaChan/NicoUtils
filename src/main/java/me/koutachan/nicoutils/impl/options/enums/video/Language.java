@@ -1,4 +1,4 @@
-package me.koutachan.nicoutils.impl.options.enums;
+package me.koutachan.nicoutils.impl.options.enums.video;
 
 public enum Language {
     JAPANESE("0"),
