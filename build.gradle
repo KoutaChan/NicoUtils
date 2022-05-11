@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+group 'me.koutachan.nicoutils'
+version '1.0'
+
+repositories {
+    mavenCentral()
+
+    maven {
+        name 'm2-dv8tion'
+        url 'https://m2.dv8tion.net/releases'
+    }
+
+    maven {
+        name 'jitpack'
+        url 'https://jitpack.io'
+    }
+}
+
+dependencies {
+    implementation 'org.jsoup:jsoup:1.14.3'
+    implementation 'org.json:json:20220320'
+
+}
+
+build.dependsOn shadowJar
