@@ -21,6 +21,8 @@ public class LiveSocket extends Endpoint {
     //普通30秒
     private int keepIntervalSeconds = 30;
 
+    private LiveChatSocket chatSocket;
+
     private Thread thread;
 
     private boolean first = true;
@@ -60,8 +62,9 @@ public class LiveSocket extends Endpoint {
         session.getAsyncRemote().sendText(sendJson.toString());
     }
 
-    public void onError(Throwable throwable) {
-        throwable.printStackTrace();
+    @Override
+    public void onError(Session session, Throwable thr) {
+        thr.printStackTrace();
     }
 
     public void onMessage(String message) {
@@ -71,6 +74,20 @@ public class LiveSocket extends Endpoint {
 
         if (type.equalsIgnoreCase("ping")) {
             session.getAsyncRemote().sendText(new JSONObject().put("type", "pong").toString());
+        }
+
+        if (type.equalsIgnoreCase("room")) {
+            if (nicoLiveInfo.getBuilder().isOpenChatSocket()) {
+                JSONObject data = jsonObject.getJSONObject("data");
+
+                URI commentServer = URI.create(data.getJSONObject("messageServer").getString("uri"));
+
+                String threadId = data.getString("threadId");
+
+                chatSocket = new LiveChatSocket(threadId);
+
+                chatSocket.start(commentServer);
+            }
         }
 
         if (type.equalsIgnoreCase("seat")) {
@@ -101,6 +118,11 @@ public class LiveSocket extends Endpoint {
         }
 
         System.out.println(jsonObject);
+    }
+
+    @Override
+    public void onClose(Session session, CloseReason closeReason) {
+
     }
 
     public void startKeepInterval() {
@@ -134,7 +156,7 @@ public class LiveSocket extends Endpoint {
     }
 
     public void stopKeepInterval() {
-        thread.interrupt();
+        if (thread != null && !thread.isInterrupted())thread.interrupt();
     }
 
     public void stop() {
@@ -143,10 +165,7 @@ public class LiveSocket extends Endpoint {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void onClose(Session session) {
-
+        //wss://msgd.live2.nicovideo.jp/websocket
     }
 
     public void start(URI URI) {
@@ -177,5 +196,21 @@ public class LiveSocket extends Endpoint {
         } catch (DeploymentException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Disconnect getDisconnect() {
+        return disconnect;
+    }
+
+    public void setDisconnect(Disconnect disconnect) {
+        this.disconnect = disconnect;
+    }
+
+    public Statistics getStatistics() {
+        return statistics;
+    }
+
+    public void setStatistics(Statistics statistics) {
+        this.statistics = statistics;
     }
 }

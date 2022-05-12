@@ -2,7 +2,7 @@ package me.koutachan.nicoutils.impl;
 
 import me.koutachan.nicoutils.impl.builder.NicoVideoBuilder;
 import me.koutachan.nicoutils.impl.data.Comment;
-import me.koutachan.nicoutils.impl.options.CommentSettings;
+import me.koutachan.nicoutils.impl.options.enums.video.CommentSettings;
 import me.koutachan.nicoutils.impl.options.enums.video.CommentLabel;
 import me.koutachan.nicoutils.impl.options.enums.video.Language;
 import me.koutachan.nicoutils.impl.options.enums.video.VideoType;

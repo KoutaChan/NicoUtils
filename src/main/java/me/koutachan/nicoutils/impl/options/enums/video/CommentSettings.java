@@ -1,4 +1,4 @@
-package me.koutachan.nicoutils.impl.options;
+package me.koutachan.nicoutils.impl.options.enums.video;
 
 import me.koutachan.nicoutils.impl.builder.NicoVideoBuilder;
 import me.koutachan.nicoutils.impl.options.enums.video.CommentLabel;

@@ -8,6 +8,8 @@ public class NicoLiveBuilder {
     private Quality quality = Quality.NORMAL;
     private Latency latency = Latency.HIGH;
 
+    private boolean openChatSocket = true;
+
     public Quality getQuality() {
         return quality;
     }
@@ -22,5 +24,13 @@ public class NicoLiveBuilder {
 
     public void setLatency(Latency latency) {
         this.latency = latency;
+    }
+
+    public boolean isOpenChatSocket() {
+        return openChatSocket;
+    }
+
+    public void setOpenChatSocket(boolean openChatSocket) {
+        this.openChatSocket = openChatSocket;
     }
 }
