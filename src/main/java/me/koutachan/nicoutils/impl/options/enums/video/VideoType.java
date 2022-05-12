@@ -4,6 +4,7 @@ public enum VideoType {
     /**
      * @deprecated 変換をかけないと使えません、通常は {@link #HTTP} を使用してください
      */
+    @Deprecated
     M3U8("hls_parameters"),
     HTTP("http_output_download_parameters");
 

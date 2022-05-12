@@ -19,7 +19,8 @@ public class NicoLiveInfo {
 
     private void init() {
         try {
-            Document document = Jsoup.connect("https://live.nicovideo.jp/watch/lv336892221?ref=top_recommend")
+            Document document = Jsoup.connect("https://live.nicovideo.jp/watch/lv336708586?ref=extplayer&po=extplayer")
+                    .cookie("player_version", "leo")
                     .get();
 
             String element = document.getElementById("embedded-data").attr("data-props");
@@ -28,7 +29,7 @@ public class NicoLiveInfo {
 
             JSONObject relive = json.getJSONObject("site").getJSONObject("relive");
 
-            final boolean ended = relive.getString("csrfToken").isEmpty();
+            final boolean ended = relive.getString("webSocketUrl").isEmpty();
 
            System.out.println(relive);
 
@@ -38,7 +39,7 @@ public class NicoLiveInfo {
 
                 System.out.println(webSocketURL);
 
-                new LiveSocket(this).start(URI.create(webSocketURL));
+                new LiveSocket(this).start(URI.create(webSocketURL + "&frontend_id=9"));
 
             }
 
