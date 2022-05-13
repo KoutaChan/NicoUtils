@@ -1,12 +1,12 @@
 package me.koutachan.nicoutils.impl;
 
 import me.koutachan.nicoutils.impl.builder.NicoLiveBuilder;
+import me.koutachan.nicoutils.impl.websocket.LiveChatSocket;
 import me.koutachan.nicoutils.impl.websocket.LiveSocket;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import javax.print.attribute.standard.Finishings;
 import java.net.URI;
 
 public class NicoLiveInfo {
@@ -16,6 +16,8 @@ public class NicoLiveInfo {
     }
 
     private NicoLiveBuilder builder = new NicoLiveBuilder();
+
+    private LiveSocket liveSocket = new LiveSocket(this);
 
     private void init() {
         try {
@@ -29,22 +31,16 @@ public class NicoLiveInfo {
 
             JSONObject relive = json.getJSONObject("site").getJSONObject("relive");
 
-            final boolean ended = relive.getString("webSocketUrl").isEmpty();
+            String webSocketURL = relive.getString("webSocketUrl");
+
+            final boolean ended = webSocketURL.isEmpty();
 
            System.out.println(relive);
 
             if (!ended) {
-
-                String webSocketURL = relive.getString("webSocketUrl");
-
                 System.out.println(webSocketURL);
 
-                new LiveSocket(this).start(URI.create(webSocketURL + "&frontend_id=9"));
-
-            }
-
-            while (true) {
-
+                liveSocket.start(URI.create(webSocketURL + "&frontend_id=9"));
             }
 
             //wss://a.live2.nicovideo.jp/unama/wsapi/v2/watch/105701637620330?audience_token=105701637620330_anonymous-user-d74a2006-bb6c-4028-8aa4-af0238a1eaf6_1652345076_1a88ca82b8a3aff9311d873454fe32249115f177&frontend_id=9
@@ -59,5 +55,21 @@ public class NicoLiveInfo {
 
     public void setBuilder(NicoLiveBuilder builder) {
         this.builder = builder;
+    }
+
+    public LiveSocket getLiveSocket() {
+        return liveSocket;
+    }
+
+    public void setLiveSocket(LiveSocket liveSocket) {
+        this.liveSocket = liveSocket;
+    }
+
+    public LiveChatSocket getChatSocket() {
+        return liveSocket.getChatSocket();
+    }
+
+    public void setChatSocket(LiveChatSocket liveChatSocket) {
+        liveSocket.setChatSocket(liveChatSocket);
     }
 }

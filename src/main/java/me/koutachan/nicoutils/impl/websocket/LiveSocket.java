@@ -4,6 +4,8 @@ import jakarta.websocket.*;
 import me.koutachan.nicoutils.impl.NicoLiveInfo;
 import me.koutachan.nicoutils.impl.options.enums.live.Disconnect;
 import me.koutachan.nicoutils.impl.data.Statistics;
+import me.koutachan.nicoutils.impl.options.enums.live.Quality;
+import me.koutachan.nicoutils.util.QualityUtils;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -105,11 +107,20 @@ public class LiveSocket extends Endpoint {
             }
         }
 
+        if (type.equalsIgnoreCase("stream")) {
+            List<Quality> qualities = QualityUtils.getAllowedQuality(jsonObject.getJSONObject("data"));
+
+
+            System.out.println(qualities);
+        }
+
         if (type.equalsIgnoreCase("disconnect")) {
             String reason = jsonObject.getJSONObject("data").getString("reason");
 
             if (reason.equalsIgnoreCase("takeover")) {
                 disconnect = Disconnect.TAKEOVER;
+            } else if (reason.equalsIgnoreCase("end_program")){
+                disconnect = Disconnect.END_PROGRAM;
             } else {
                 disconnect = Disconnect.UNKNOWN;
             }
@@ -125,6 +136,12 @@ public class LiveSocket extends Endpoint {
 
     }
 
+    public void callInterval() {
+        if (session.isOpen()) {
+            session.getAsyncRemote().sendText(new JSONObject().put("type", "keepSeat").toString());
+        }
+    }
+
     public void startKeepInterval() {
         stopKeepInterval();
 
@@ -134,10 +151,10 @@ public class LiveSocket extends Endpoint {
                     while (session.isOpen()) {
                         Thread.sleep(keepIntervalSeconds * 1000L);
 
-                        session.getAsyncRemote().sendText(new JSONObject().put("type", "keepSeat").toString());
+                        callInterval();
                     }
                 } catch (InterruptedException e) {
-                    thread.interrupt();
+                    stop();
                 }
             });
 
@@ -145,6 +162,10 @@ public class LiveSocket extends Endpoint {
         }
     }
 
+    /**
+     *
+     * @param chasePlay
+     */
     public void sendAkashic(final boolean chasePlay) {
         JSONObject object = new JSONObject()
                 .put("type", "getAkashic")
@@ -156,12 +177,13 @@ public class LiveSocket extends Endpoint {
     }
 
     public void stopKeepInterval() {
-        if (thread != null && !thread.isInterrupted())thread.interrupt();
+        if (thread != null && !thread.isInterrupted() && thread.isAlive()) thread.interrupt();
     }
 
     public void stop() {
         try {
             session.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -212,5 +234,13 @@ public class LiveSocket extends Endpoint {
 
     public void setStatistics(Statistics statistics) {
         this.statistics = statistics;
+    }
+
+    public LiveChatSocket getChatSocket() {
+        return chatSocket;
+    }
+
+    public void setChatSocket(LiveChatSocket chatSocket) {
+        this.chatSocket = chatSocket;
     }
 }

@@ -2,6 +2,11 @@ package me.koutachan.nicoutils.impl.options.enums.live;
 
 public enum Quality {
 
+    /**
+     * プレミアムがtrueの場合は通常はプレミアムのみですが、混雑していない場合はプレミアムの機能を使える場合があります
+     *
+     * 通常は {@link #AUTO} を使用するか {@link #NORMAL} を使用してください
+     */
     SUPER_HIGH("super_high", true),
     HIGH("high", true),
     NORMAL("normal", false),
