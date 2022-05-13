@@ -4,8 +4,9 @@ import jakarta.websocket.*;
 import me.koutachan.nicoutils.impl.NicoLiveInfo;
 import me.koutachan.nicoutils.impl.options.enums.live.Disconnect;
 import me.koutachan.nicoutils.impl.data.Statistics;
+import me.koutachan.nicoutils.impl.options.enums.live.Latency;
 import me.koutachan.nicoutils.impl.options.enums.live.Quality;
-import me.koutachan.nicoutils.util.QualityUtils;
+import me.koutachan.nicoutils.impl.util.QualityUtils;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -32,6 +33,9 @@ public class LiveSocket extends Endpoint {
     private Disconnect disconnect;
 
     private Statistics statistics;
+
+    private List<Quality> availableQualities;
+    private Quality quality;
 
     public LiveSocket(NicoLiveInfo liveInfo) {
         super();
@@ -108,10 +112,10 @@ public class LiveSocket extends Endpoint {
         }
 
         if (type.equalsIgnoreCase("stream")) {
-            List<Quality> qualities = QualityUtils.getAllowedQuality(jsonObject.getJSONObject("data"));
+            JSONObject data = jsonObject.getJSONObject("data");
 
-
-            System.out.println(qualities);
+            this.availableQualities = QualityUtils.getAllowedQuality(data);
+            this.quality = QualityUtils.getQualityEnum(data.getString("quality"));
         }
 
         if (type.equalsIgnoreCase("disconnect")) {
@@ -159,6 +163,22 @@ public class LiveSocket extends Endpoint {
             });
 
             thread.start();
+        }
+    }
+
+    public void sendChange(Quality quality, Latency latency, final boolean chasePlay) {
+        if (session.isOpen()) {
+            JSONObject qualityJson = new JSONObject()
+                    .put("quality", quality.getType())
+                    .put("protocol", "hls+fmp4")
+                    .put("latency", latency.getType())
+                    .put("chasePlay", chasePlay);
+
+            JSONObject sendJson = new JSONObject()
+                    .put("type", "changeStream")
+                    .put("data", qualityJson);
+
+            session.getAsyncRemote().sendText(sendJson.toString());
         }
     }
 

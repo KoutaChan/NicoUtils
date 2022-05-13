@@ -1,6 +1,8 @@
 package me.koutachan.nicoutils.impl;
 
 import me.koutachan.nicoutils.impl.builder.NicoLiveBuilder;
+import me.koutachan.nicoutils.impl.options.enums.live.Latency;
+import me.koutachan.nicoutils.impl.options.enums.live.Quality;
 import me.koutachan.nicoutils.impl.websocket.LiveChatSocket;
 import me.koutachan.nicoutils.impl.websocket.LiveSocket;
 import org.json.JSONObject;
@@ -21,8 +23,7 @@ public class NicoLiveInfo {
 
     private void init() {
         try {
-            Document document = Jsoup.connect("https://live.nicovideo.jp/watch/lv336708586?ref=extplayer&po=extplayer")
-                    .cookie("player_version", "leo")
+            Document document = Jsoup.connect("https://live.nicovideo.jp/watch/lv336919608")
                     .get();
 
             String element = document.getElementById("embedded-data").attr("data-props");
@@ -35,12 +36,17 @@ public class NicoLiveInfo {
 
             final boolean ended = webSocketURL.isEmpty();
 
-           System.out.println(relive);
+            System.out.println(relive);
 
             if (!ended) {
                 System.out.println(webSocketURL);
 
                 liveSocket.start(URI.create(webSocketURL + "&frontend_id=9"));
+            }
+
+            //デバッグ用
+            while (true) {
+
             }
 
             //wss://a.live2.nicovideo.jp/unama/wsapi/v2/watch/105701637620330?audience_token=105701637620330_anonymous-user-d74a2006-bb6c-4028-8aa4-af0238a1eaf6_1652345076_1a88ca82b8a3aff9311d873454fe32249115f177&frontend_id=9

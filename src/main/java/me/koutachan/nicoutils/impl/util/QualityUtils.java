@@ -1,4 +1,4 @@
-package me.koutachan.nicoutils.util;
+package me.koutachan.nicoutils.impl.util;
 
 import me.koutachan.nicoutils.impl.options.enums.live.Quality;
 import org.json.JSONArray;
@@ -15,13 +15,17 @@ public class QualityUtils {
         final List<Quality> qualities = new ArrayList<>();
 
         for (Object ob : jsonArray) {
-            try {
-                qualities.add(Quality.valueOf(ob.toString().toUpperCase()));
-            } catch (Exception ex) {
-                qualities.add(Quality.AUTO);
-            }
+            qualities.add(getQualityEnum(ob.toString()));
         }
 
         return qualities;
+    }
+
+    public static Quality getQualityEnum(String str) {
+        try {
+            return Quality.valueOf(str.toUpperCase());
+        } catch (Exception ex) {
+            return Quality.AUTO;
+        }
     }
 }
