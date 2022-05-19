@@ -1,23 +1,48 @@
 package me.koutachan.nicoutils.impl.data;
 
+import org.json.JSONObject;
 import org.jsoup.nodes.Element;
 
 public class Comment {
 
-    private String thread, no, vpos, date, date_uses, anonymity, user_id, mail, device, comment;
+    private String thread, user_id, mail, device, comment;
 
+    private long no, vpos, date, date_uses, anonymity;
+
+    private int premium;
 
     public Comment(Element element) {
         this.thread = element.attr("thread");
-        this.no = element.attr("no");
-        this.vpos = element.attr("vpos");
-        this.date = element.attr("date");
-        this.date_uses = element.attr("date_usec");
-        this.anonymity = element.attr("anonymity");
+        this.no = Long.parseLong(element.attr("no"));
+        this.vpos = Long.parseLong(element.attr("vpos"));
+        this.date = Long.parseLong(element.attr("date"));
+        this.date_uses = Long.parseLong("date_usec");
+        this.anonymity = Long.parseLong(element.attr("anonymity"));
         this.user_id = element.attr("user_id");
         this.mail = element.attr("mail");
 
         this.comment = element.text();
+    }
+
+    public Comment(JSONObject jsonObject) {
+        this.thread = jsonObject.getString("thread");
+        this.no = jsonObject.getLong("no");
+        this.vpos = jsonObject.getLong("vpos");
+        this.date = jsonObject.getLong("date");
+        this.date_uses = jsonObject.getLong("date_usec");
+
+        if (jsonObject.has("anonymity")) {
+            this.anonymity = jsonObject.getLong("anonymity");
+        }
+
+        this.user_id = jsonObject.getString("user_id");
+        this.mail = jsonObject.getString("mail");
+
+        if (jsonObject.has("premium")) {
+            this.premium = jsonObject.getInt("premium");
+        }
+
+        this.comment = jsonObject.getString("content");
     }
 
     public String getThread() {
@@ -31,43 +56,46 @@ public class Comment {
     /**
      * コメントの発言順
      */
-    public String getNo() {
+    public long getNo() {
         return no;
     }
 
-    public void setNo(String no) {
+    public void setNo(long no) {
         this.no = no;
     }
 
-    public String getVpos() {
+    public long getVpos() {
         return vpos;
     }
 
-    public void setVpos(String vpos) {
+    public void setVpos(long vpos) {
         this.vpos = vpos;
     }
 
-    public String getDate() {
+    public long getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(long date) {
         this.date = date;
     }
 
-    public String getDateUses() {
+    public long getDateUses() {
         return date_uses;
     }
 
-    public void setDateUses(String dateUses) {
+    public void setDateUses(long dateUses) {
         this.date_uses = dateUses;
     }
 
-    public String getAnonymity() {
+    /**
+     * ニコ生限定、既にサイトを開く前からコメントが送信されている場合は 0になります
+     */
+    public long getAnonymity() {
         return anonymity;
     }
 
-    public void setAnonymity(String anonymity) {
+    public void setAnonymity(long anonymity) {
         this.anonymity = anonymity;
     }
 
@@ -85,6 +113,14 @@ public class Comment {
 
     public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    public int getPremium() {
+        return premium;
+    }
+
+    public void setPremium(int premium) {
+        this.premium = premium;
     }
 
     /**

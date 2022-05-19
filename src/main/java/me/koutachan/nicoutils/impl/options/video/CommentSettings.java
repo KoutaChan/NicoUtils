@@ -92,9 +92,9 @@ public class CommentSettings {
 
     /**
      * 取得するコメントタイプ
-     *      DEFAULT_COMMENT - 通常コメント
-     *      OWNER_COMMENT - オーナーコメント
-     *      ONE_CLICK_COMMENT - ワンクリックコメント
+     *      {@link CommentLabel#DEFAULT_COMMENT} - 通常コメント
+     *      {@link CommentLabel#OWNER_COMMENT} - オーナーコメント
+     *      {@link CommentLabel#ONE_CLICK_COMMENT} - ワンクリックコメント
      */
     public NicoVideoBuilder setLabel(CommentLabel label) {
         this.label = label;

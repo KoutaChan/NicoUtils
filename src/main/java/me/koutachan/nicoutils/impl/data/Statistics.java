@@ -9,7 +9,7 @@ public class Statistics {
     public Statistics(JSONObject object) {
         viewers = object.getLong("viewers");
         comments = object.getLong("comments");
-        adPoints = object.getLong("adPoints");
+        if (object.has("adPoints")) adPoints = object.getLong("adPoints");
     }
 
     public long getViewers() {

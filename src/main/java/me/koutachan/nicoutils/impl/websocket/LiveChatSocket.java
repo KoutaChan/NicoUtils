@@ -1,6 +1,12 @@
 package me.koutachan.nicoutils.impl.websocket;
 
 import jakarta.websocket.*;
+import me.koutachan.nicoutils.impl.data.Comment;
+import me.koutachan.nicoutils.impl.event.Listener;
+import me.koutachan.nicoutils.impl.event.LiveEvent;
+import me.koutachan.nicoutils.impl.event.tests.LiveEventListener;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,7 +18,9 @@ public class LiveChatSocket extends Endpoint {
 
     private Session session;
 
-    private String threadId;
+    private final String threadId;
+
+    private Thread thread;
 
     public LiveChatSocket(String threadId) {
         this.threadId = threadId;
@@ -20,23 +28,86 @@ public class LiveChatSocket extends Endpoint {
 
     @Override
     public void onOpen(Session session, EndpointConfig config) {
-        //
+        JSONArray json = new JSONArray()
+                .put(new JSONObject().put("ping", new JSONObject().put("content", "rs:0")).toMap())
+                .put(new JSONObject().put("ping", new JSONObject().put("content", "ps:0")).toMap())
+                .put(new JSONObject().put("thread", new JSONObject()
+                        .put("thread", threadId)
+                        .put("version", "20061206")
+                        .put("user_id", "guest")
+                        //コメント件数
+                        .put("res_from", -150)
+                        .put("with_global", 1)
+                        .put("scores", 1)
+                        .put("nicoru", 0)))
+                .put(new JSONObject().put("ping", new JSONObject().put("content", "pf:0")).toMap())
+                .put(new JSONObject().put("ping", new JSONObject().put("content", "rf:0")).toMap());
 
-        System.out.println("aa");
+        session.getAsyncRemote().sendText(json.toString());
+
+        //for tests
+        Listener.addListener(new LiveEventListener());
+
+        startChatTimer();
     }
 
     public void onMessage(String message) {
-        System.out.println(message);
+        List<LiveEvent> events = Listener.getLiveListener();
+
+        events.forEach(event -> event.onJsonEvent(message));
+
+        JSONObject jsonObject = new JSONObject(message);
+
+        if (jsonObject.has("chat")) {
+            events.forEach(event -> event.onChatEvent(new Comment(jsonObject.getJSONObject("chat"))));
+        }
     }
 
     @Override
     public void onError(Session session, Throwable thr) {
-        System.out.println("aa");
+        thr.printStackTrace();
     }
 
     @Override
     public void onClose(Session session, CloseReason closeReason) {
-        System.out.println("aa");
+    }
+
+    public void call() {
+        if (session.isOpen()) {
+            session.getAsyncRemote().sendText("");
+        }
+    }
+
+    public void startChatTimer() {
+        stopChatTimer();
+
+        if (session != null && session.isOpen()) {
+            thread = new Thread(() -> {
+                try {
+                    while (session.isOpen()) {
+                        Thread.sleep(60000L);
+
+                        call();
+                    }
+                } catch (InterruptedException e) {
+                    stop();
+                }
+            });
+
+            thread.start();
+        }
+    }
+
+    public void stopChatTimer() {
+        if (thread != null && !thread.isInterrupted() && thread.isAlive()) thread.interrupt();
+    }
+
+    public void stop() {
+        try {
+            session.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void start(URI URI) {

@@ -44,8 +44,6 @@ public class LiveSocket extends Endpoint {
     }
 
     public void onOpen(Session session, EndpointConfig config) {
-        System.out.println("oepnded!");
-
         JSONObject quality = new JSONObject()
                 .put("quality", nicoLiveInfo.getBuilder().getQuality().getType())
                 //他のタイプがあるか検証してもいいかもしれない
@@ -66,11 +64,6 @@ public class LiveSocket extends Endpoint {
                         .put("reconnect", false));
 
         session.getAsyncRemote().sendText(sendJson.toString());
-    }
-
-    @Override
-    public void onError(Session session, Throwable thr) {
-        thr.printStackTrace();
     }
 
     public void onMessage(String message) {
@@ -100,7 +93,7 @@ public class LiveSocket extends Endpoint {
             this.keepIntervalSeconds = jsonObject.getJSONObject("data").getInt("keepIntervalSec");
 
             startKeepInterval();
-            sendAkashic(false);
+            //sendAkashic(false);
         }
 
         if (type.equalsIgnoreCase("statistics")) {
@@ -121,18 +114,28 @@ public class LiveSocket extends Endpoint {
         if (type.equalsIgnoreCase("disconnect")) {
             String reason = jsonObject.getJSONObject("data").getString("reason");
 
-            if (reason.equalsIgnoreCase("takeover")) {
+            try {
+                disconnect = Disconnect.valueOf(reason.toUpperCase());
+            } catch (Exception ex) {
+                disconnect = Disconnect.UNKNOWN;
+            }
+            /**if (reason.equalsIgnoreCase("takeover")) {
                 disconnect = Disconnect.TAKEOVER;
             } else if (reason.equalsIgnoreCase("end_program")){
                 disconnect = Disconnect.END_PROGRAM;
             } else {
                 disconnect = Disconnect.UNKNOWN;
-            }
+            }*/
 
             stop();
         }
 
         System.out.println(jsonObject);
+    }
+
+    @Override
+    public void onError(Session session, Throwable thr) {
+        thr.printStackTrace();
     }
 
     @Override
@@ -166,6 +169,10 @@ public class LiveSocket extends Endpoint {
         }
     }
 
+    public void stopKeepInterval() {
+        if (thread != null && !thread.isInterrupted() && thread.isAlive()) thread.interrupt();
+    }
+
     public void sendChange(Quality quality, Latency latency, final boolean chasePlay) {
         if (session.isOpen()) {
             JSONObject qualityJson = new JSONObject()
@@ -196,18 +203,12 @@ public class LiveSocket extends Endpoint {
         first = false;
     }
 
-    public void stopKeepInterval() {
-        if (thread != null && !thread.isInterrupted() && thread.isAlive()) thread.interrupt();
-    }
-
     public void stop() {
         try {
             session.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //wss://msgd.live2.nicovideo.jp/websocket
     }
 
     public void start(URI URI) {
@@ -262,5 +263,21 @@ public class LiveSocket extends Endpoint {
 
     public void setChatSocket(LiveChatSocket chatSocket) {
         this.chatSocket = chatSocket;
+    }
+
+    public List<Quality> getAvailableQualities() {
+        return availableQualities;
+    }
+
+    public void setAvailableQualities(List<Quality> availableQualities) {
+        this.availableQualities = availableQualities;
+    }
+
+    public Quality getQuality() {
+        return quality;
+    }
+
+    public void setQuality(Quality quality) {
+        this.quality = quality;
     }
 }

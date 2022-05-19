@@ -18,9 +18,9 @@ public class NicoVideoBuilder {
 
     /**
      * ハートビートをオンにするかを決定します
-     * オンにした場合 動画のリンクを維持するために30秒に1回ニコニコのサーバーにpingします
-     *
-     * 必ず終わった場合は 以下のメソッドを実行してください
+     * <br>オンにした場合 動画のリンクを維持するために30秒に1回ニコニコのサーバーにpingします
+     * <br>
+     * <br>必ず終わった場合は 以下のメソッドを実行してください
      * @see NicoVideoInfo#stopHeartBeat()
      */
     public NicoVideoBuilder setHeartBeat(final boolean heartbeat) {
@@ -35,8 +35,7 @@ public class NicoVideoBuilder {
 
     /**
      * ニコ動のリンクを設定してください
-     *
-     * ニコ生などは現在再生できません
+     * <br>ニコ生などは現在再生できません
      */
     public NicoVideoBuilder setURL(final String url) {
         this.url = url;
@@ -60,10 +59,9 @@ public class NicoVideoBuilder {
 
     /**
      * 現在はM3U8かHTTPで取得できます
-     *
-     * M3U8はダウンロード、HTTPはHTTPで視聴できます
-     * 通常はHTTPで取得されます
-     *
+     * <br>
+     * <br>M3U8はダウンロード、HTTPはHTTPで視聴できます
+     * <br>通常はHTTPで取得されます
      * @see NicoVideoInfo#getVideoURL()
      */
     public NicoVideoBuilder setVideoType(VideoType videoType) {
@@ -73,7 +71,7 @@ public class NicoVideoBuilder {
     }
 
     /**
-     * これまで設定した項目で情報を取得します
+     * <br>これまで設定した項目で情報を取得します
      *
      * @see NicoVideoInfo
      *

@@ -1,5 +1,6 @@
 package me.koutachan.nicoutils.impl;
 
+import me.koutachan.nicoutils.NicoUtils;
 import me.koutachan.nicoutils.impl.builder.NicoVideoBuilder;
 import me.koutachan.nicoutils.impl.data.Comment;
 import me.koutachan.nicoutils.impl.options.video.CommentSettings;
@@ -49,15 +50,14 @@ public class NicoVideoInfo {
     }
 
     public static void main(String[] args) {
-        new NicoVideoBuilder()
+        NicoUtils.getVideoBuilder()
                 .setURL("https://www.nicovideo.jp/watch/sm39411572")
-                .create()
                 .getCommentSettings().setGetComment(true)
                 .getCommentSettings().setLanguage(Language.ENGLISH)
                 .getCommentSettings().setLabel(CommentLabel.DEFAULT_COMMENT)
                 .setVideoType(VideoType.HTTP)
                 .create()
-                .getComments().forEach(s -> System.out.println(s.getComment()));
+                .getDescription().forEach(System.out::println);
     }
 
     private void init() {
@@ -192,7 +192,7 @@ public class NicoVideoInfo {
 
     /**
      * 初回のみ 1~2分のみの動画URLを生成します
-     * この機能は現在は必ず実行されます
+     * <br>この機能は現在は必ず実行されます
      *
      * @throws IOException
      *         httpの通信が失敗した場合にエラーが発生します
@@ -242,7 +242,6 @@ public class NicoVideoInfo {
     /**
      * ハートビートを停止します
      */
-
     public void stopHeartBeat() {
         if (thread != null && !thread.isInterrupted() && thread.isAlive()) thread.interrupt();
     }

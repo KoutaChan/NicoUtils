@@ -1,8 +1,6 @@
 package me.koutachan.nicoutils.impl;
 
 import me.koutachan.nicoutils.impl.builder.NicoLiveBuilder;
-import me.koutachan.nicoutils.impl.options.enums.live.Latency;
-import me.koutachan.nicoutils.impl.options.enums.live.Quality;
 import me.koutachan.nicoutils.impl.websocket.LiveChatSocket;
 import me.koutachan.nicoutils.impl.websocket.LiveSocket;
 import org.json.JSONObject;
@@ -23,7 +21,7 @@ public class NicoLiveInfo {
 
     private void init() {
         try {
-            Document document = Jsoup.connect("https://live.nicovideo.jp/watch/lv336919608")
+            Document document = Jsoup.connect(null)
                     .get();
 
             String element = document.getElementById("embedded-data").attr("data-props");
