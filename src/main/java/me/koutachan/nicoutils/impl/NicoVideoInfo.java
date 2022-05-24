@@ -361,7 +361,7 @@ public class NicoVideoInfo {
     }
 
     /**
-     * @see CommentSettings#setGetComment(boolean)
+     * {@link CommentSettings#setGetComment(boolean)}
      *      を使用しないと必ず空のListが返ってきます
      *
      * @see CommentSettings

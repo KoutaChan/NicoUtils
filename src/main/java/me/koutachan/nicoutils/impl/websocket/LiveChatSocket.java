@@ -140,4 +140,12 @@ public class LiveChatSocket extends Endpoint {
             e.printStackTrace();
         }
     }
+
+    public Session getSession() {
+        return session;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
+    }
 }

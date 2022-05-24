@@ -2,6 +2,7 @@ package me.koutachan.nicoutils.impl.websocket;
 
 import jakarta.websocket.*;
 import me.koutachan.nicoutils.impl.NicoLiveInfo;
+import me.koutachan.nicoutils.impl.event.Listener;
 import me.koutachan.nicoutils.impl.options.enums.live.Disconnect;
 import me.koutachan.nicoutils.impl.data.Statistics;
 import me.koutachan.nicoutils.impl.options.enums.live.Latency;
@@ -30,7 +31,7 @@ public class LiveSocket extends Endpoint {
 
     private boolean first = true;
 
-    private Disconnect disconnect;
+    private Disconnect disconnect = Disconnect.UNKNOWN;
 
     private Statistics statistics;
 
@@ -130,7 +131,7 @@ public class LiveSocket extends Endpoint {
             stop();
         }
 
-        System.out.println(jsonObject);
+        //System.out.println(jsonObject);
     }
 
     @Override
@@ -205,7 +206,11 @@ public class LiveSocket extends Endpoint {
 
     public void stop() {
         try {
+            Listener.getLiveListener().forEach(event -> event.onEndEvent(session, chatSocket.getSession(), disconnect));
+
             session.close();
+
+            chatSocket.stop();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -239,6 +244,14 @@ public class LiveSocket extends Endpoint {
         } catch (DeploymentException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Session getSession() {
+        return session;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
     }
 
     public Disconnect getDisconnect() {

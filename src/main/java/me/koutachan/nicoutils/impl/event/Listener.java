@@ -11,6 +11,8 @@ public class Listener {
     public static void addListener(Object obj) {
         if (obj instanceof LiveEvent) {
             liveListener.add((LiveEvent) obj);
+        } else {
+            throw new IllegalArgumentException("invalid object=" + obj.getClass().getTypeName());
         }
     }
 

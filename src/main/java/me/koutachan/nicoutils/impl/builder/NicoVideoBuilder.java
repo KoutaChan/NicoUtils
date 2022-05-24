@@ -21,6 +21,8 @@ public class NicoVideoBuilder {
      * <br>オンにした場合 動画のリンクを維持するために30秒に1回ニコニコのサーバーにpingします
      * <br>
      * <br>必ず終わった場合は 以下のメソッドを実行してください
+     * <br>{@link NicoVideoInfo#stopHeartBeat()}
+     *
      * @see NicoVideoInfo#stopHeartBeat()
      */
     public NicoVideoBuilder setHeartBeat(final boolean heartbeat) {

@@ -21,7 +21,7 @@ public class NicoLiveInfo {
 
     private void init() {
         try {
-            Document document = Jsoup.connect(null)
+            Document document = Jsoup.connect("https://live.nicovideo.jp/watch/lv337003311")
                     .get();
 
             String element = document.getElementById("embedded-data").attr("data-props");
