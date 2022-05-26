@@ -38,6 +38,8 @@ public class LiveSocket extends Endpoint {
     private List<Quality> availableQualities;
     private Quality quality;
 
+    private String uri, sync_uri;
+
     public LiveSocket(NicoLiveInfo liveInfo) {
         super();
 
@@ -94,7 +96,6 @@ public class LiveSocket extends Endpoint {
             this.keepIntervalSeconds = jsonObject.getJSONObject("data").getInt("keepIntervalSec");
 
             startKeepInterval();
-            //sendAkashic(false);
         }
 
         if (type.equalsIgnoreCase("statistics")) {
@@ -107,6 +108,9 @@ public class LiveSocket extends Endpoint {
 
         if (type.equalsIgnoreCase("stream")) {
             JSONObject data = jsonObject.getJSONObject("data");
+            
+            this.uri = data.getString("uri");
+            this.sync_uri = data.getString("syncUri");
 
             this.availableQualities = QualityUtils.getAllowedQuality(data);
             this.quality = QualityUtils.getQualityEnum(data.getString("quality"));
@@ -120,18 +124,11 @@ public class LiveSocket extends Endpoint {
             } catch (Exception ex) {
                 disconnect = Disconnect.UNKNOWN;
             }
-            /**if (reason.equalsIgnoreCase("takeover")) {
-                disconnect = Disconnect.TAKEOVER;
-            } else if (reason.equalsIgnoreCase("end_program")){
-                disconnect = Disconnect.END_PROGRAM;
-            } else {
-                disconnect = Disconnect.UNKNOWN;
-            }*/
 
             stop();
         }
 
-        //System.out.println(jsonObject);
+        Listener.getLiveListener().forEach(event -> event.onLiveJsonEvent(jsonObject.toString()));
     }
 
     @Override
@@ -207,6 +204,7 @@ public class LiveSocket extends Endpoint {
     public void stop() {
         try {
             Listener.getLiveListener().forEach(event -> event.onEndEvent(session, chatSocket.getSession(), disconnect));
+            stopKeepInterval();
 
             session.close();
 

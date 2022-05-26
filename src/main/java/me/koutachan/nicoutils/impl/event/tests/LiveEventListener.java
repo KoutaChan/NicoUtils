@@ -15,7 +15,12 @@ public class LiveEventListener extends LiveEvent {
     }
 
     @Override
-    public void onJsonEvent(String json) {
+    public void onLiveJsonEvent(String json) {
+        System.out.println(json);
+    }
+
+    @Override
+    public void onChatJsonEvent(String json) {
         System.out.println(json);
     }
 

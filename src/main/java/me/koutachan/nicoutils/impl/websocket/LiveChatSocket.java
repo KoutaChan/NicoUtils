@@ -54,7 +54,7 @@ public class LiveChatSocket extends Endpoint {
     public void onMessage(String message) {
         List<LiveEvent> events = Listener.getLiveListener();
 
-        events.forEach(event -> event.onJsonEvent(message));
+        events.forEach(event -> event.onChatJsonEvent(message));
 
         JSONObject jsonObject = new JSONObject(message);
 
@@ -104,6 +104,8 @@ public class LiveChatSocket extends Endpoint {
 
     public void stop() {
         try {
+            stopChatTimer();
+
             session.close();
         } catch (IOException e) {
             e.printStackTrace();

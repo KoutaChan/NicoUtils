@@ -6,7 +6,9 @@ import me.koutachan.nicoutils.impl.options.enums.live.Disconnect;
 
 public abstract class LiveEvent {
 
-    public void onJsonEvent(String json) {}
+    public void onLiveJsonEvent(String json) {}
+
+    public void onChatJsonEvent(String json) {}
     public void onChatEvent(Comment comment) {}
 
     public void onEndEvent(Session live, Session chat, Disconnect reason) {}

@@ -12,16 +12,26 @@ import java.net.URI;
 public class NicoLiveInfo {
 
     public static void main(String[] args) {
-        new NicoLiveInfo().init();
+        new NicoLiveBuilder().setURL("https://live.nicovideo.jp/watch/lv337086176?ref=pc_userpage_nicorepo")
+                .create();
     }
 
-    private NicoLiveBuilder builder = new NicoLiveBuilder();
+    private NicoLiveBuilder builder;
 
     private LiveSocket liveSocket = new LiveSocket(this);
 
+    private final String HTTP_PARAMETER = "&frontend_id=9";
+
+    public NicoLiveInfo(NicoLiveBuilder builder) {
+        this.builder = builder;
+
+        init();
+    }
+
+
     private void init() {
         try {
-            Document document = Jsoup.connect("https://live.nicovideo.jp/watch/lv337003311")
+            Document document = Jsoup.connect(builder.getURL())
                     .get();
 
             String element = document.getElementById("embedded-data").attr("data-props");
@@ -34,20 +44,14 @@ public class NicoLiveInfo {
 
             final boolean ended = webSocketURL.isEmpty();
 
-            System.out.println(relive);
+            if (ended) throw new IllegalStateException("already live ended. s=" + relive);
 
-            if (!ended) {
-                System.out.println(webSocketURL);
-
-                liveSocket.start(URI.create(webSocketURL + "&frontend_id=9"));
-            }
+            liveSocket.start(URI.create(webSocketURL + HTTP_PARAMETER));
 
             //デバッグ用
             while (true) {
 
             }
-
-            //wss://a.live2.nicovideo.jp/unama/wsapi/v2/watch/105701637620330?audience_token=105701637620330_anonymous-user-d74a2006-bb6c-4028-8aa4-af0238a1eaf6_1652345076_1a88ca82b8a3aff9311d873454fe32249115f177&frontend_id=9
         } catch (Exception e) {
             e.printStackTrace();
         }

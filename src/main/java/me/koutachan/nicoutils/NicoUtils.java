@@ -5,6 +5,7 @@ import me.koutachan.nicoutils.impl.builder.NicoVideoBuilder;
 import me.koutachan.nicoutils.impl.builder.NicoVideoSearchBuilder;
 import me.koutachan.nicoutils.impl.event.Listener;
 import me.koutachan.nicoutils.impl.event.LiveEvent;
+import me.koutachan.nicoutils.impl.event.tests.LiveEventListener;
 
 public class NicoUtils {
 
@@ -29,7 +30,7 @@ public class NicoUtils {
     /**
      * @param obj イベントのオブジェクトを入れてください
      * <br> 現在登録可能なイベントのオブジェクトは
-     * <br> {@}
+     * <br> {@link LiveEventListener} のみです
      */
     public static void addListener(Object obj) {
         Listener.addListener(obj);

@@ -36,7 +36,10 @@ public class Comment {
         }
 
         this.user_id = jsonObject.getString("user_id");
-        this.mail = jsonObject.getString("mail");
+
+        if (jsonObject.has("mail")) {
+            this.mail = jsonObject.getString("mail");
+        }
 
         if (jsonObject.has("premium")) {
             this.premium = jsonObject.getInt("premium");
