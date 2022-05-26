@@ -86,7 +86,7 @@ public class LiveSocket extends Endpoint {
 
                 String threadId = data.getString("threadId");
 
-                chatSocket = new LiveChatSocket(threadId);
+                chatSocket = new LiveChatSocket(nicoLiveInfo, threadId);
 
                 chatSocket.start(commentServer);
             }
@@ -108,12 +108,14 @@ public class LiveSocket extends Endpoint {
 
         if (type.equalsIgnoreCase("stream")) {
             JSONObject data = jsonObject.getJSONObject("data");
-            
+
             this.uri = data.getString("uri");
             this.sync_uri = data.getString("syncUri");
 
             this.availableQualities = QualityUtils.getAllowedQuality(data);
             this.quality = QualityUtils.getQualityEnum(data.getString("quality"));
+
+            this.nicoLiveInfo.call();
         }
 
         if (type.equalsIgnoreCase("disconnect")) {
@@ -225,7 +227,7 @@ public class LiveSocket extends Endpoint {
                  * ヘッダーが必要です ヘッダーがない場合エラーが吐かれます
                  */
                 public void beforeRequest(Map<String, List<String>> headers) {
-                   headers.put("User-Agent", Collections.singletonList("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36"));
+                   headers.put("User-Agent", Collections.singletonList("User-Agent: " + nicoLiveInfo.getBuilder().getRequestSettings().getAgent()));
                    headers.put("Accept-Language", Collections.singletonList("ja-JP,ja;q=0.9,en-US;q=0.8,en;q=0.7"));
                    headers.put("Host", Collections.singletonList("a.live2.nicovideo.jp"));
                    headers.put("Origin", Collections.singletonList("https://live.nicovideo.jp"));
@@ -290,5 +292,29 @@ public class LiveSocket extends Endpoint {
 
     public void setQuality(Quality quality) {
         this.quality = quality;
+    }
+
+    public String getURI() {
+        return uri;
+    }
+
+    public void setURI(String uri) {
+        this.uri = uri;
+    }
+
+    public String getSyncURI() {
+        return sync_uri;
+    }
+
+    public void setSyncURI(String sync_uri) {
+        this.sync_uri = sync_uri;
+    }
+
+    public int getKeepIntervalSeconds() {
+        return keepIntervalSeconds;
+    }
+
+    public void setKeepIntervalSeconds(int keepIntervalSeconds) {
+        this.keepIntervalSeconds = keepIntervalSeconds;
     }
 }

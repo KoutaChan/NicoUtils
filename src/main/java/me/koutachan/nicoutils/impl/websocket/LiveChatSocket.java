@@ -1,6 +1,7 @@
 package me.koutachan.nicoutils.impl.websocket;
 
 import jakarta.websocket.*;
+import me.koutachan.nicoutils.impl.NicoLiveInfo;
 import me.koutachan.nicoutils.impl.data.Comment;
 import me.koutachan.nicoutils.impl.event.Listener;
 import me.koutachan.nicoutils.impl.event.LiveEvent;
@@ -21,8 +22,11 @@ public class LiveChatSocket extends Endpoint {
     private final String threadId;
 
     private Thread thread;
+    private NicoLiveInfo nicoLiveInfo;
 
-    public LiveChatSocket(String threadId) {
+    public LiveChatSocket(NicoLiveInfo nicoLiveInfo, String threadId) {
+        this.nicoLiveInfo = nicoLiveInfo;
+
         this.threadId = threadId;
     }
 
@@ -123,7 +127,7 @@ public class LiveChatSocket extends Endpoint {
                  * ヘッダーが必要です ヘッダーがない場合エラーが吐かれます
                  */
                 public void beforeRequest(Map<String, List<String>> headers) {
-                    headers.put("User-Agent", Collections.singletonList("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36"));
+                    headers.put("User-Agent", Collections.singletonList("User-Agent: " + nicoLiveInfo.getBuilder().getRequestSettings().getAgent()));
                     headers.put("Accept-Language", Collections.singletonList("ja-JP,ja;q=0.9,en-US;q=0.8,en;q=0.7"));
                     headers.put("Host", Collections.singletonList("msgd.live2.nicovideo.jp"));
                     headers.put("Origin", Collections.singletonList("https://live.nicovideo.jp"));

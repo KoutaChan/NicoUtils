@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.IOException;
 import java.net.URI;
 
 public class NicoLiveInfo {
@@ -53,6 +54,32 @@ public class NicoLiveInfo {
 
             }
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String PLATFORM = "\"Windows\"";
+
+    public void call() {
+        try {
+            Document document = Jsoup.connect(this.liveSocket.getSyncURI())
+                    .header("sec-ch-ua-mobile", "?0")
+                    .header("sec-ch-ua-platform", PLATFORM)
+                    .header("Sec-Fetch-Dest", "empty")
+                    .header("Sec-Fetch-Site", "cross-site")
+                    .header("User-Agent", builder.getRequestSettings().getAgent())
+                    .ignoreContentType(true)
+                    .get();
+
+            JSONObject jsonObject = new JSONObject(document.text());
+
+            JSONObject meta = jsonObject.getJSONObject("meta");
+
+            if (meta.getInt("status") != 200 || !meta.getString("message").equals("ok"))
+                throw new IllegalStateException("request failed. s=" + jsonObject);
+
+            System.out.println(document.text());
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

@@ -1,9 +1,7 @@
 package me.koutachan.nicoutils.impl.event.tests;
 
 import jakarta.websocket.Session;
-import me.koutachan.nicoutils.impl.builder.NicoLiveBuilder;
 import me.koutachan.nicoutils.impl.data.Comment;
-import me.koutachan.nicoutils.impl.event.Listener;
 import me.koutachan.nicoutils.impl.event.LiveEvent;
 import me.koutachan.nicoutils.impl.options.enums.live.Disconnect;
 
