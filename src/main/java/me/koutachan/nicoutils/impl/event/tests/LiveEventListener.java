@@ -9,7 +9,7 @@ public class LiveEventListener extends LiveEvent {
 
     @Override
     public void onChatEvent(Comment comment) {
-        System.out.println(comment.getComment());
+        //System.out.println(comment.getComment());
     }
 
     @Override
@@ -19,7 +19,7 @@ public class LiveEventListener extends LiveEvent {
 
     @Override
     public void onChatJsonEvent(String json) {
-        System.out.println(json);
+        //System.out.println(json);
     }
 
     @Override

@@ -49,9 +49,6 @@ public class LiveChatSocket extends Endpoint {
 
         session.getAsyncRemote().sendText(json.toString());
 
-        //for tests
-        Listener.addListener(new LiveEventListener());
-
         startChatTimer();
     }
 

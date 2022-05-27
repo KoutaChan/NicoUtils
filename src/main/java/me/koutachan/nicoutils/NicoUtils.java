@@ -1,6 +1,7 @@
 package me.koutachan.nicoutils;
 
 import me.koutachan.nicoutils.impl.NicoVideoSearch;
+import me.koutachan.nicoutils.impl.builder.NicoLiveBuilder;
 import me.koutachan.nicoutils.impl.builder.NicoVideoBuilder;
 import me.koutachan.nicoutils.impl.builder.NicoVideoSearchBuilder;
 import me.koutachan.nicoutils.impl.event.Listener;
@@ -26,6 +27,10 @@ public class NicoUtils {
     //public static NicoVideoSearchBuilder getSearchBuilder() {
     //    return new NicoVideoSearchBuilder();
     //}
+
+    public static NicoLiveBuilder getLiveBuilder() {
+        return new NicoLiveBuilder();
+    }
 
     /**
      * @param obj イベントのオブジェクトを入れてください

@@ -1,8 +1,10 @@
 package me.koutachan.nicoutils.impl;
 
 import me.koutachan.nicoutils.impl.builder.NicoLiveBuilder;
+import me.koutachan.nicoutils.impl.options.enums.live.Latency;
 import me.koutachan.nicoutils.impl.websocket.LiveChatSocket;
 import me.koutachan.nicoutils.impl.websocket.LiveSocket;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -22,6 +24,10 @@ public class NicoLiveInfo {
     private LiveSocket liveSocket = new LiveSocket(this);
 
     private final String HTTP_PARAMETER = "&frontend_id=9";
+
+    private long sequence = 0;
+
+    private Thread thread;
 
     public NicoLiveInfo(NicoLiveBuilder builder) {
         this.builder = builder;
@@ -78,10 +84,40 @@ public class NicoLiveInfo {
             if (meta.getInt("status") != 200 || !meta.getString("message").equals("ok"))
                 throw new IllegalStateException("request failed. s=" + jsonObject);
 
-            System.out.println(document.text());
+            JSONArray segments = jsonObject.getJSONObject("data").getJSONObject("stream_sync").getJSONArray("segments_metadata");
+
+            JSONObject obj = segments.getJSONObject(0);
+
+            this.sequence = obj.getLong("sequence");
+
+            System.out.println(jsonObject);
+
+            start();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void start() {
+        stop();
+
+        thread = new Thread(() -> {
+            try {
+                while (true) {
+                    Thread.sleep(builder.getLatency() == Latency.LOW ? 2 * 1000L : 5 * 1000L);
+
+                    //TODO: call()
+                }
+            } catch (InterruptedException e) {
+                stop();
+            }
+        });
+
+        thread.start();
+    }
+
+    public void stop() {
+        if (thread != null && !thread.isInterrupted() && thread.isAlive()) thread.interrupt();
     }
 
     public NicoLiveBuilder getBuilder() {

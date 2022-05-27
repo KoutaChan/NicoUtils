@@ -3,6 +3,7 @@ package me.koutachan.nicoutils.impl.websocket;
 import jakarta.websocket.*;
 import me.koutachan.nicoutils.impl.NicoLiveInfo;
 import me.koutachan.nicoutils.impl.event.Listener;
+import me.koutachan.nicoutils.impl.event.tests.LiveEventListener;
 import me.koutachan.nicoutils.impl.options.enums.live.Disconnect;
 import me.koutachan.nicoutils.impl.data.Statistics;
 import me.koutachan.nicoutils.impl.options.enums.live.Latency;
@@ -67,6 +68,9 @@ public class LiveSocket extends Endpoint {
                         .put("reconnect", false));
 
         session.getAsyncRemote().sendText(sendJson.toString());
+
+        //for tests
+        Listener.addListener(new LiveEventListener());
     }
 
     public void onMessage(String message) {
