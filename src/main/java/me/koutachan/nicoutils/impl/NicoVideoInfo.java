@@ -16,6 +16,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class NicoVideoInfo {
@@ -85,7 +86,7 @@ public class NicoVideoInfo {
                 descriptionHtml = descriptionHtml.replaceAll(descriptionElement.outerHtml(), descriptionElement.attr("href"));
             }
 
-            description = List.of(Jsoup.clean(descriptionHtml, new Safelist().addTags("br"))
+            description = Arrays.asList(Jsoup.clean(descriptionHtml, new Safelist().addTags("br"))
                     .replaceAll("&nbsp;", "").split("<br>"));
 
             if (commentSettings.isGetComment()) {

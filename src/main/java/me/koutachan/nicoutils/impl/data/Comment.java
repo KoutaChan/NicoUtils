@@ -16,7 +16,7 @@ public class Comment {
         this.no = Long.parseLong(element.attr("no"));
         this.vpos = Long.parseLong(element.attr("vpos"));
         this.date = Long.parseLong(element.attr("date"));
-        this.date_uses = Long.parseLong("date_usec");
+        this.date_uses = Long.parseLong(element.attr("date_usec"));
         this.anonymity = Long.parseLong(element.attr("anonymity"));
         this.user_id = element.attr("user_id");
         this.mail = element.attr("mail");

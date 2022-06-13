@@ -165,7 +165,7 @@ public class LiveSocket extends Endpoint {
                         callInterval();
                     }
                 } catch (InterruptedException e) {
-                    stop();
+                    //todo: stop();
                 }
             });
 
@@ -210,6 +210,7 @@ public class LiveSocket extends Endpoint {
     public void stop() {
         try {
             Listener.getLiveListener().forEach(event -> event.onEndEvent(session, chatSocket.getSession(), disconnect));
+
             stopKeepInterval();
 
             session.close();

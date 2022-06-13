@@ -1,7 +1,9 @@
 package me.koutachan.nicoutils.impl;
 
+import me.koutachan.nicoutils.NicoUtils;
 import me.koutachan.nicoutils.impl.builder.NicoLiveBuilder;
 import me.koutachan.nicoutils.impl.options.enums.live.Latency;
+import me.koutachan.nicoutils.impl.options.enums.live.PlatForm;
 import me.koutachan.nicoutils.impl.websocket.LiveChatSocket;
 import me.koutachan.nicoutils.impl.websocket.LiveSocket;
 import org.json.JSONArray;
@@ -15,7 +17,7 @@ import java.net.URI;
 public class NicoLiveInfo {
 
     public static void main(String[] args) {
-        new NicoLiveBuilder().setURL("https://live.nicovideo.jp/watch/lv337086176?ref=pc_userpage_nicorepo")
+        NicoUtils.getLiveBuilder().setURL("https://live.nicovideo.jp/watch/lv337086176?ref=pc_userpage_nicorepo")
                 .create();
     }
 
@@ -64,7 +66,7 @@ public class NicoLiveInfo {
         }
     }
 
-    private String PLATFORM = "\"Windows\"";
+    private final String PLATFORM = PlatForm.WINDOWS.getPlatform();
 
     public void call() {
         try {

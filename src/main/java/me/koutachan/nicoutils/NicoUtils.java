@@ -1,11 +1,8 @@
 package me.koutachan.nicoutils;
 
-import me.koutachan.nicoutils.impl.NicoVideoSearch;
 import me.koutachan.nicoutils.impl.builder.NicoLiveBuilder;
 import me.koutachan.nicoutils.impl.builder.NicoVideoBuilder;
-import me.koutachan.nicoutils.impl.builder.NicoVideoSearchBuilder;
 import me.koutachan.nicoutils.impl.event.Listener;
-import me.koutachan.nicoutils.impl.event.LiveEvent;
 import me.koutachan.nicoutils.impl.event.tests.LiveEventListener;
 
 public class NicoUtils {

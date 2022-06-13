@@ -18,7 +18,7 @@ public class NicoVideoBuilder {
 
     /**
      * ハートビートをオンにするかを決定します
-     * <br>オンにした場合 動画のリンクを維持するために30秒に1回ニコニコのサーバーにpingします
+     * <br>オンにした場合 動画のリンクを維持するために40秒に1回ニコニコのサーバーにpingします
      * <br>
      * <br>必ず終わった場合は 以下のメソッドを実行してください
      * <br>{@link NicoVideoInfo#stopHeartBeat()}

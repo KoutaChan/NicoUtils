@@ -1,6 +1,5 @@
 package me.koutachan.nicoutils.impl.event;
 
-import javax.annotation.processing.Generated;
 import java.util.ArrayList;
 import java.util.List;
 
