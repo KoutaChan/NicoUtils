@@ -12,7 +12,9 @@ public enum Quality {
     NORMAL("normal", false),
     LOW("low", false),
     SUPER_LOW("super_low", false),
-    AUTO("abr", false);
+    AUTO("abr", false),
+    AUDIO_HIGH("audio_high", false),
+    AUDIO_ONLY("audio_only", false);
 
     private final String type;
 

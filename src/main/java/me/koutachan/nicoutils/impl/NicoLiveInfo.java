@@ -17,7 +17,7 @@ import java.net.URI;
 public class NicoLiveInfo {
 
     public static void main(String[] args) {
-        NicoUtils.getLiveBuilder().setURL("https://live.nicovideo.jp/watch/lv337086176?ref=pc_userpage_nicorepo")
+        NicoUtils.getLiveBuilder().setURL("https://live.nicovideo.jp/watch/lv337466060")
                 .create();
     }
 
@@ -45,9 +45,7 @@ public class NicoLiveInfo {
 
             String element = document.getElementById("embedded-data").attr("data-props");
 
-            JSONObject json = new JSONObject(element);
-
-            JSONObject relive = json.getJSONObject("site").getJSONObject("relive");
+            JSONObject relive = new JSONObject(element).getJSONObject("site").getJSONObject("relive");
 
             String webSocketURL = relive.getString("webSocketUrl");
 
@@ -92,8 +90,6 @@ public class NicoLiveInfo {
 
             this.sequence = obj.getLong("sequence");
 
-            System.out.println(jsonObject);
-
             start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -106,6 +102,14 @@ public class NicoLiveInfo {
         thread = new Thread(() -> {
             try {
                 while (true) {
+                    Latency latency = builder.getLatency();
+
+                    if (latency == Latency.LOW) {
+
+                    } else {
+
+                    }
+
                     Thread.sleep(builder.getLatency() == Latency.LOW ? 2 * 1000L : 5 * 1000L);
 
                     //TODO: call()
