@@ -8,12 +8,14 @@ import me.koutachan.nicoutils.impl.options.enums.live.Disconnect;
 import me.koutachan.nicoutils.impl.data.Statistics;
 import me.koutachan.nicoutils.impl.options.enums.live.Latency;
 import me.koutachan.nicoutils.impl.options.enums.live.Quality;
+import me.koutachan.nicoutils.impl.util.NicoTimeUtils;
 import me.koutachan.nicoutils.impl.util.QualityUtils;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +37,7 @@ public class LiveSocket extends Endpoint {
     private Disconnect disconnect = Disconnect.UNKNOWN;
 
     private Statistics statistics;
+    private Date end, begin;
 
     private List<Quality> availableQualities;
     private Quality quality;
@@ -78,52 +81,45 @@ public class LiveSocket extends Endpoint {
 
         String type = jsonObject.getString("type");
 
+        JSONObject data = jsonObject.optJSONObject("data");
+
         if (type.equalsIgnoreCase("ping")) {
             session.getAsyncRemote().sendText(new JSONObject().put("type", "pong").toString());
-        }
-
-        if (type.equalsIgnoreCase("room")) {
+        } else if (type.equalsIgnoreCase("room")) {
             if (nicoLiveInfo.getBuilder().isOpenChatSocket()) {
-                JSONObject data = jsonObject.getJSONObject("data");
-
                 URI commentServer = URI.create(data.getJSONObject("messageServer").getString("uri"));
 
                 String threadId = data.getString("threadId");
 
                 chatSocket = new LiveChatSocket(nicoLiveInfo, threadId);
-
                 chatSocket.start(commentServer);
             }
-        }
-
-        if (type.equalsIgnoreCase("seat")) {
-            this.keepIntervalSeconds = jsonObject.getJSONObject("data").getInt("keepIntervalSec");
+        } else if (type.equalsIgnoreCase("seat")) {
+            keepIntervalSeconds = data.getInt("keepIntervalSec");
 
             startKeepInterval();
-        }
-
-        if (type.equalsIgnoreCase("statistics")) {
-            statistics = new Statistics(jsonObject.getJSONObject("data"));
+        } else if (type.equalsIgnoreCase("statistics")) {
+            statistics = new Statistics(data);
 
             if (first) {
                 sendAkashic(false);
             }
-        }
+        } else if (type.equalsIgnoreCase("stream")) {
+            uri = data.getString("uri");
+            sync_uri = data.getString("syncUri");
 
-        if (type.equalsIgnoreCase("stream")) {
-            JSONObject data = jsonObject.getJSONObject("data");
+            availableQualities = QualityUtils.getAllowedQuality(data);
+            quality = QualityUtils.getQualityEnum(data.getString("quality"));
 
-            this.uri = data.getString("uri");
-            this.sync_uri = data.getString("syncUri");
+            nicoLiveInfo.call();
+        } else if (type.equalsIgnoreCase("schedule")) {
 
-            this.availableQualities = QualityUtils.getAllowedQuality(data);
-            this.quality = QualityUtils.getQualityEnum(data.getString("quality"));
+            //beta...
+            begin = NicoTimeUtils.toDate(data.getString("begin"));
+            end = NicoTimeUtils.toDate(data.getString("end"));
 
-            this.nicoLiveInfo.call();
-        }
-
-        if (type.equalsIgnoreCase("disconnect")) {
-            String reason = jsonObject.getJSONObject("data").getString("reason");
+        } else if (type.equalsIgnoreCase("disconnect")) {
+            String reason = data.getString("reason");
 
             try {
                 disconnect = Disconnect.valueOf(reason.toUpperCase());
@@ -132,8 +128,13 @@ public class LiveSocket extends Endpoint {
             }
 
             stop();
-        }
+        } else if (type.equalsIgnoreCase("error")) {
+            //{"data":{"code":"NO_STREAM_AVAILABLE"},"type":"error"}
+            String code = data.getString("code");
 
+            throw new IllegalStateException("error occurred on LiveSocket (code: " + code + ")");
+        }
+        //todo: akashic
         Listener.getLiveListener().forEach(event -> event.onLiveJsonEvent(jsonObject.toString()));
     }
 
@@ -321,5 +322,21 @@ public class LiveSocket extends Endpoint {
 
     public void setKeepIntervalSeconds(int keepIntervalSeconds) {
         this.keepIntervalSeconds = keepIntervalSeconds;
+    }
+
+    public Date getEnd() {
+        return end;
+    }
+
+    public void setEnd(Date end) {
+        this.end = end;
+    }
+
+    public Date getBegin() {
+        return begin;
+    }
+
+    public void setBegin(Date begin) {
+        this.begin = begin;
     }
 }

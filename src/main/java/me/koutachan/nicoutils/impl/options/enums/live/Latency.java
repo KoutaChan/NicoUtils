@@ -7,7 +7,8 @@ public enum Latency {
      * <br> {@link #LOW} を使用してみてください
      */
     HIGH("high"),
-    LOW("low");
+    LOW("low"),
+    UNKNOWN("Unavailable Type");
 
     private final String type;
 

@@ -4,6 +4,7 @@ import me.koutachan.nicoutils.NicoUtils;
 import me.koutachan.nicoutils.impl.builder.NicoLiveBuilder;
 import me.koutachan.nicoutils.impl.options.enums.live.Latency;
 import me.koutachan.nicoutils.impl.options.enums.live.PlatForm;
+import me.koutachan.nicoutils.impl.options.enums.live.Quality;
 import me.koutachan.nicoutils.impl.websocket.LiveChatSocket;
 import me.koutachan.nicoutils.impl.websocket.LiveSocket;
 import org.json.JSONArray;
@@ -13,19 +14,20 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.net.URI;
+import java.sql.SQLSyntaxErrorException;
+import java.util.Collections;
 
 public class NicoLiveInfo {
 
     public static void main(String[] args) {
-        NicoUtils.getLiveBuilder().setURL("https://live.nicovideo.jp/watch/lv337466060")
+        NicoUtils.getLiveBuilder().setURL("https://live.nicovideo.jp/watch/lv337753075?ref=pc_userpage_nicorepo")
                 .create();
     }
 
     private NicoLiveBuilder builder;
 
     private LiveSocket liveSocket = new LiveSocket(this);
-
-    private final String HTTP_PARAMETER = "&frontend_id=9";
+    //private final String HTTP_PARAMETER = "&frontend_id=9";
 
     private long sequence = 0;
 
@@ -53,12 +55,12 @@ public class NicoLiveInfo {
 
             if (ended) throw new IllegalStateException("already live ended. s=" + relive);
 
-            liveSocket.start(URI.create(webSocketURL + HTTP_PARAMETER));
+            liveSocket.start(URI.create(webSocketURL));
 
             //デバッグ用
             while (true) {
-
-            }
+                System.out.println("begin: " + liveSocket.getBegin() + " start:" + liveSocket.getEnd());
+           }
         } catch (Exception e) {
             e.printStackTrace();
         }

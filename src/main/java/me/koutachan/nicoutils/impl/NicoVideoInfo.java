@@ -350,7 +350,7 @@ public class NicoVideoInfo {
      */
     public void setDelay(long delay) {
         if (delay >= 0) this.delay = delay;
-        else throw new IllegalStateException("delay is minus (" + delay + ")");
+        else throw new IllegalStateException("delay is negative (" + delay + ")");
     }
 
     public List<String> getDescription() {
