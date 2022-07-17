@@ -7,6 +7,7 @@ import me.koutachan.nicoutils.impl.options.video.CommentSettings;
 import me.koutachan.nicoutils.impl.options.enums.video.CommentLabel;
 import me.koutachan.nicoutils.impl.options.enums.video.Language;
 import me.koutachan.nicoutils.impl.options.enums.video.VideoType;
+import me.koutachan.nicoutils.impl.util.FileUtils;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,10 +15,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.safety.Safelist;
 import org.jsoup.select.Elements;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class NicoVideoInfo {
 
@@ -381,5 +384,17 @@ public class NicoVideoInfo {
 
     public VideoType getVideoType() {
         return videoType;
+    }
+
+    public void asyncDownload(File file, Consumer<Void> v) {
+        new Thread(() -> {
+            FileUtils.downloadFileFromURL(contentURL, file);
+
+            v.accept(null);
+        }).start();
+    }
+
+    public void syncDownload(File file) {
+        FileUtils.downloadFileFromURL(contentURL, file);
     }
 }
