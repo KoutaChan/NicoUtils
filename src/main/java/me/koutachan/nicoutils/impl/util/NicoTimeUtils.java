@@ -1,7 +1,5 @@
 package me.koutachan.nicoutils.impl.util;
 
-import org.glassfish.grizzly.http.util.FastDateFormat;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

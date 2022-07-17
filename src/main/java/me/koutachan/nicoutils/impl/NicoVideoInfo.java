@@ -3,10 +3,10 @@ package me.koutachan.nicoutils.impl;
 import me.koutachan.nicoutils.NicoUtils;
 import me.koutachan.nicoutils.impl.builder.NicoVideoBuilder;
 import me.koutachan.nicoutils.impl.data.Comment;
-import me.koutachan.nicoutils.impl.options.video.CommentSettings;
 import me.koutachan.nicoutils.impl.options.enums.video.CommentLabel;
 import me.koutachan.nicoutils.impl.options.enums.video.Language;
 import me.koutachan.nicoutils.impl.options.enums.video.VideoType;
+import me.koutachan.nicoutils.impl.options.video.CommentSettings;
 import me.koutachan.nicoutils.impl.util.FileUtils;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -104,6 +104,7 @@ public class NicoVideoInfo {
                         .put("res_from", String.valueOf(commentSettings.getGetCommentFrom()))
                         .put("language", commentSettings.getLanguage().getLanguage());
 
+                //todo: uses https://nvcomment.nicovideo.jp/v1/threads
                 if (commentSettings.getUnixTime() != 0) {
                     commentJson.put("when", commentSettings.getUnixTime());
                 }
@@ -124,6 +125,7 @@ public class NicoVideoInfo {
                     .getJSONObject("movie")
                     .getJSONObject("session");
 
+            //todo: ????
             final String videos = session.getJSONArray("videos").getString(0);
             final String audios = session.getJSONArray("audios").getString(0);
 
@@ -386,11 +388,11 @@ public class NicoVideoInfo {
         return videoType;
     }
 
-    public void asyncDownload(File file, Consumer<Void> v) {
+    public void asyncDownload(File file, Consumer<NicoVideoInfo> v) {
         new Thread(() -> {
             FileUtils.downloadFileFromURL(contentURL, file);
 
-            v.accept(null);
+            v.accept(this);
         }).start();
     }
 

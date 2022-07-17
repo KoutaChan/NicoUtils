@@ -4,7 +4,6 @@ import me.koutachan.nicoutils.NicoUtils;
 import me.koutachan.nicoutils.impl.builder.NicoLiveBuilder;
 import me.koutachan.nicoutils.impl.options.enums.live.Latency;
 import me.koutachan.nicoutils.impl.options.enums.live.PlatForm;
-import me.koutachan.nicoutils.impl.options.enums.live.Quality;
 import me.koutachan.nicoutils.impl.websocket.LiveChatSocket;
 import me.koutachan.nicoutils.impl.websocket.LiveSocket;
 import org.json.JSONArray;
@@ -14,8 +13,6 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.net.URI;
-import java.sql.SQLSyntaxErrorException;
-import java.util.Collections;
 
 public class NicoLiveInfo {
 

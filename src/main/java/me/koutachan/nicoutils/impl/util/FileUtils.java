@@ -1,9 +1,7 @@
 package me.koutachan.nicoutils.impl.util;
 
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Paths;
 
 public class FileUtils {
 

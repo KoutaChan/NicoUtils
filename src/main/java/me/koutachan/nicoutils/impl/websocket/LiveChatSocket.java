@@ -5,7 +5,6 @@ import me.koutachan.nicoutils.impl.NicoLiveInfo;
 import me.koutachan.nicoutils.impl.data.Comment;
 import me.koutachan.nicoutils.impl.event.Listener;
 import me.koutachan.nicoutils.impl.event.LiveEvent;
-import me.koutachan.nicoutils.impl.event.tests.LiveEventListener;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

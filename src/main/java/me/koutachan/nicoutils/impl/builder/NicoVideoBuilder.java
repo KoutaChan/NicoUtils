@@ -1,8 +1,8 @@
 package me.koutachan.nicoutils.impl.builder;
 
 import me.koutachan.nicoutils.impl.NicoVideoInfo;
-import me.koutachan.nicoutils.impl.options.video.CommentSettings;
 import me.koutachan.nicoutils.impl.options.enums.video.VideoType;
+import me.koutachan.nicoutils.impl.options.video.CommentSettings;
 
 public class NicoVideoBuilder {
 

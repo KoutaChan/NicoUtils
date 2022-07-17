@@ -56,3 +56,35 @@ public class test {
     }
 }
 ```
+### 動画をダウンロード (シンプル)
+```
+import me.koutachan.nicoutils.NicoUtils;
+import me.koutachan.nicoutils.impl.options.enums.video.VideoType;
+
+import java.nio.file.Paths;
+
+public class test {
+    public static void main(String[] args) {
+        NicoUtils.getVideoBuilder()
+                .setVideoType(VideoType.HTTP)
+                .setHeartBeat(true)
+                .setURL("https://www.nicovideo.jp/watch/sm9")
+                .create()
+                .asyncDownload(Paths.get("", "test.mp4").toFile(), NicoVideoInfo::stopHeartBeat);
+    }
+}
+```
+
+### BentchMark
+| Benchmark                | Mode  | Cnt | Score  | Error  | Units  |
+|--------------------------|-------|-----|--------|--------|--------|
+| NicoDownloadFileTest.run | thrpt | 5   | ≈ 10⁻⁵ |        | ops/ms |
+| NicoVideoTest.run        | thrpt | 5   | 0.003  | ±0.001 | ops/ms |
+
+### TODO:
+- [ ] ライブ取得を完全に取得できるようにする (~ 85%)
+- [ ] 検索機能を取得できるようにする (~ 0%)
+- [ ] ニコニコ大百科を取得できるようにする (~ 0%)
+
+
+- [ ] ログイン機能に対応させる (~ ??)
