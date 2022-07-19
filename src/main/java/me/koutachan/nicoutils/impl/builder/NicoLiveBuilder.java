@@ -2,15 +2,15 @@ package me.koutachan.nicoutils.impl.builder;
 
 import me.koutachan.nicoutils.impl.NicoLiveInfo;
 import me.koutachan.nicoutils.impl.options.enums.live.Latency;
-import me.koutachan.nicoutils.impl.options.enums.live.Quality;
+import me.koutachan.nicoutils.impl.options.enums.live.LiveQuality;
 import me.koutachan.nicoutils.impl.options.live.RequestSettings;
 
 public class NicoLiveBuilder {
 
-    private Quality quality = Quality.NORMAL;
+    private LiveQuality liveQuality = LiveQuality.NORMAL;
     private Latency latency = Latency.HIGH;
 
-    private RequestSettings requestSettings = new RequestSettings(this);
+    private RequestSettings<NicoLiveBuilder> requestSettings = new RequestSettings<>(this);
 
     private boolean openChatSocket = true;
 
@@ -26,12 +26,12 @@ public class NicoLiveBuilder {
         return this;
     }
 
-    public Quality getQuality() {
-        return quality;
+    public LiveQuality getQuality() {
+        return liveQuality;
     }
 
-    public NicoLiveBuilder setQuality(Quality quality) {
-        this.quality = quality;
+    public NicoLiveBuilder setQuality(LiveQuality liveQuality) {
+        this.liveQuality = liveQuality;
 
         return this;
     }
@@ -59,11 +59,11 @@ public class NicoLiveBuilder {
     /**
      * リクエスト関係の設定
      */
-    public RequestSettings getRequestSettings() {
+    public RequestSettings<NicoLiveBuilder> getRequestSettings() {
         return requestSettings;
     }
 
-    public NicoLiveBuilder setRequestSettings(RequestSettings requestSettings) {
+    public NicoLiveBuilder setRequestSettings(RequestSettings<NicoLiveBuilder> requestSettings) {
         this.requestSettings = requestSettings;
 
         return this;

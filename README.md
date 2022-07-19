@@ -1,6 +1,7 @@
 # NicoUtils
 
 ## はじめに
+ - APIではない物も使用しています
  - 自己責任で使用してください
 
 ## ライセンス
@@ -27,36 +28,7 @@ public class test {
     }
 }
 ```
-
 ### 動画をダウンロード
-```
-import me.koutachan.nicoutils.NicoUtils;
-import me.koutachan.nicoutils.impl.options.enums.video.VideoType;
-
-import java.io.File;
-import java.nio.file.Paths;
-
-public class test {
-    public static void main(String[] args) {
-        NicoVideoInfo info = NicoUtils.getVideoBuilder()
-                .setVideoType(VideoType.HTTP)
-                .setHeartBeat(true)
-                .setURL("https://www.nicovideo.jp/watch/sm9")
-                .create();
-
-        File file = Paths.get("", "test.mp4").toFile();
-
-        long start = System.currentTimeMillis();
-
-        info.asyncDownload(file, v -> {
-            info.stopHeartBeat();
-
-            System.out.printf("output=%s time(ms)=%s%n", file.getAbsolutePath(), System.currentTimeMillis() - start);
-        });
-    }
-}
-```
-### 動画をダウンロード (シンプル)
 ```
 import me.koutachan.nicoutils.NicoUtils;
 import me.koutachan.nicoutils.impl.options.enums.video.VideoType;
@@ -79,12 +51,11 @@ public class test {
 | Benchmark                | Mode  | Cnt | Score  | Error  | Units  |
 |--------------------------|-------|-----|--------|--------|--------|
 | NicoDownloadFileTest.run | thrpt | 5   | ≈ 10⁻⁵ |        | ops/ms |
-| NicoVideoTest.run        | thrpt | 5   | 0.003  | ±0.001 | ops/ms |
 
 ### TODO:
 - [ ] ライブ取得を完全に取得できるようにする (~ 85%)
-- [ ] 検索機能を取得できるようにする (~ 0%)
+- [ ] 検索機能に対応する (~ 0%)
 - [ ] ニコニコ大百科を取得できるようにする (~ 0%)
 
 
-- [ ] ログイン機能に対応させる (~ ??)
+- [ ] ログイン機能に対応させる (~ 40%)

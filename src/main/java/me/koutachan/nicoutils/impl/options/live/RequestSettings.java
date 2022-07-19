@@ -1,24 +1,24 @@
 package me.koutachan.nicoutils.impl.options.live;
 
-import me.koutachan.nicoutils.impl.builder.NicoLiveBuilder;
+import me.koutachan.nicoutils.impl.util.HardCodeUtils;
 
-public class RequestSettings {
+public class RequestSettings<T> {
 
-    private String agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36";
+    private final T object;
 
-    private final NicoLiveBuilder builder;
+    private String agent = HardCodeUtils.getUserAgent();
 
-    public RequestSettings(NicoLiveBuilder builder) {
-        this.builder = builder;
+    public RequestSettings(T object) {
+        this.object = object;
     }
 
     public String getAgent() {
         return agent;
     }
 
-    public NicoLiveBuilder setAgent(String agent) {
+    public T setAgent(String agent) {
         this.agent = agent;
 
-        return builder;
+        return object;
     }
 }

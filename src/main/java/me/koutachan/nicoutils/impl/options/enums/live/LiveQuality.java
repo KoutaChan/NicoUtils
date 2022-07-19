@@ -1,6 +1,6 @@
 package me.koutachan.nicoutils.impl.options.enums.live;
 
-public enum Quality {
+public enum LiveQuality {
 
     /**
      * プレミアムがtrueの場合は通常はプレミアムのみですが、混雑していない場合はプレミアムの機能を使える場合があります
@@ -20,7 +20,7 @@ public enum Quality {
 
     private final boolean premium;
 
-    Quality(String quality, boolean premium) {
+    LiveQuality(String quality, boolean premium) {
         this.type = quality;
 
         this.premium = premium;

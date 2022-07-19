@@ -24,7 +24,6 @@ public class NicoLiveInfo {
     private NicoLiveBuilder builder;
 
     private LiveSocket liveSocket = new LiveSocket(this);
-    //private final String HTTP_PARAMETER = "&frontend_id=9";
 
     private long sequence = 0;
 

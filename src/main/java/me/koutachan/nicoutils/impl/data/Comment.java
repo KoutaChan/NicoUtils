@@ -92,7 +92,8 @@ public class Comment {
     }
 
     /**
-     * ニコ生限定、既にサイトを開く前からコメントが送信されている場合は 0になります
+     * 多分 ニコニコ生放送限定
+     * 既にサイトを開く前からコメントが送信されている場合は 0になります
      */
     public long getAnonymity() {
         return anonymity;

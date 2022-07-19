@@ -6,8 +6,10 @@ import me.koutachan.nicoutils.impl.data.Comment;
 import me.koutachan.nicoutils.impl.options.enums.video.CommentLabel;
 import me.koutachan.nicoutils.impl.options.enums.video.Language;
 import me.koutachan.nicoutils.impl.options.enums.video.VideoType;
+import me.koutachan.nicoutils.impl.options.live.RequestSettings;
 import me.koutachan.nicoutils.impl.options.video.CommentSettings;
 import me.koutachan.nicoutils.impl.util.FileUtils;
+import me.koutachan.nicoutils.impl.util.HardCodeUtils;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -28,7 +30,7 @@ public class NicoVideoInfo {
 
     private boolean heartbeat, success;
 
-    private JSONObject sentJson, receivedJson;
+    private JSONObject json, sentJson, receivedJson;
 
     private List<String> description = new ArrayList<>();
     private List<Comment> comments = new ArrayList<>();
@@ -36,6 +38,7 @@ public class NicoVideoInfo {
     private Thread thread;
 
     private final CommentSettings commentSettings;
+    private final RequestSettings<NicoVideoBuilder> requestSettings;
 
     private final VideoType videoType;
 
@@ -49,31 +52,32 @@ public class NicoVideoInfo {
         this.videoType = builder.getVideoType();
 
         this.commentSettings = builder.getCommentSettings();
+        this.requestSettings = builder.getRequestSettings();
 
         init();
     }
 
     public static void main(String[] args) {
-        NicoUtils.getVideoBuilder()
+        NicoVideoInfo info = NicoUtils.getVideoBuilder()
                 .setURL("https://www.nicovideo.jp/watch/sm39411572")
-                .getCommentSettings().setGetComment(true)
-                .getCommentSettings().setLanguage(Language.ENGLISH)
-                .getCommentSettings().setLabel(CommentLabel.DEFAULT_COMMENT)
+                .setHeartBeat(true)
                 .setVideoType(VideoType.HTTP)
-                .create()
-                .getDescription().forEach(System.out::println);
+                .create();
+
+        System.out.println(info.getContentURL());
     }
 
     private void init() {
         try {
             Document document = Jsoup.connect(url)
+                    .header("User-Agent", requestSettings.getAgent())
                     .get();
 
             title = document.title();
 
             String element = document.getElementById("js-initial-watch-data").attr("data-api-data");
 
-            final JSONObject json = new JSONObject(element);
+            json = new JSONObject(element);
 
             //何故かhtmlコードで存在しているのでjsoupに解読してもらう
             String descriptionHtml = json.getJSONObject("video").getString("description");
@@ -119,7 +123,7 @@ public class NicoVideoInfo {
                 commentDocument.getElementsByTag("chat").forEach(comment -> comments.add(new Comment(comment)));
             }
 
-            final JSONObject session = new JSONObject(element)
+            final JSONObject session = json
                     .getJSONObject("media")
                     .getJSONObject("delivery")
                     .getJSONObject("movie")
@@ -209,6 +213,7 @@ public class NicoVideoInfo {
         Document document = Jsoup.connect("https://api.dmc.nico/api/sessions?_format=json")
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
+                .header("User-Agent", requestSettings.getAgent())
                 .requestBody(sentJson.toString())
                 .ignoreContentType(true)
                 .post();
@@ -234,7 +239,8 @@ public class NicoVideoInfo {
             Document document = Jsoup.connect("https://api.dmc.nico/api/sessions/" + sessionId + "?_format=json&_method=PUT")
                     .header("Content-Type", "application/json")
                     .header("Accept", "application/json")
-                    .requestBody(receivedJson.toString())
+                    .header("User-Agent", requestSettings.getAgent())
+                    .requestBody(receivedJson.getJSONObject("data").toString())
                     .ignoreContentType(true)
                     .post();
 

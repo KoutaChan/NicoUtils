@@ -2,12 +2,13 @@ package me.koutachan.nicoutils.impl.websocket;
 
 import jakarta.websocket.*;
 import me.koutachan.nicoutils.impl.NicoLiveInfo;
+import me.koutachan.nicoutils.impl.NicoVideoInfo;
 import me.koutachan.nicoutils.impl.data.Statistics;
 import me.koutachan.nicoutils.impl.event.Listener;
 import me.koutachan.nicoutils.impl.event.tests.LiveEventListener;
 import me.koutachan.nicoutils.impl.options.enums.live.Disconnect;
 import me.koutachan.nicoutils.impl.options.enums.live.Latency;
-import me.koutachan.nicoutils.impl.options.enums.live.Quality;
+import me.koutachan.nicoutils.impl.options.enums.live.LiveQuality;
 import me.koutachan.nicoutils.impl.util.NicoTimeUtils;
 import me.koutachan.nicoutils.impl.util.QualityUtils;
 import org.json.JSONObject;
@@ -39,8 +40,8 @@ public class LiveSocket extends Endpoint {
     private Statistics statistics;
     private Date end, begin;
 
-    private List<Quality> availableQualities;
-    private Quality quality;
+    private List<LiveQuality> availableQualities;
+    private LiveQuality liveQuality;
 
     private String uri, sync_uri;
 
@@ -109,7 +110,7 @@ public class LiveSocket extends Endpoint {
             sync_uri = data.getString("syncUri");
 
             availableQualities = QualityUtils.getAllowedQuality(data);
-            quality = QualityUtils.getQualityEnum(data.getString("quality"));
+            liveQuality = QualityUtils.getQualityEnum(data.getString("quality"));
 
             nicoLiveInfo.call();
         } else if (type.equalsIgnoreCase("schedule")) {
@@ -154,6 +155,10 @@ public class LiveSocket extends Endpoint {
         }
     }
 
+    /**
+     * ライブを維持するために実行されるもの
+     * <br> 止めたい場合は{@link LiveSocket#stopKeepInterval()}を実行してください
+     */
     public void startKeepInterval() {
         stopKeepInterval();
 
@@ -178,10 +183,10 @@ public class LiveSocket extends Endpoint {
         if (thread != null && !thread.isInterrupted() && thread.isAlive()) thread.interrupt();
     }
 
-    public void sendChange(Quality quality, Latency latency, final boolean chasePlay) {
+    public void sendChange(LiveQuality liveQuality, Latency latency, final boolean chasePlay) {
         if (session.isOpen()) {
             JSONObject qualityJson = new JSONObject()
-                    .put("quality", quality.getType())
+                    .put("quality", liveQuality.getType())
                     .put("protocol", "hls+fmp4")
                     .put("latency", latency.getType())
                     .put("chasePlay", chasePlay);
@@ -194,10 +199,7 @@ public class LiveSocket extends Endpoint {
         }
     }
 
-    /**
-     *
-     * @param chasePlay
-     */
+
     public void sendAkashic(final boolean chasePlay) {
         JSONObject object = new JSONObject()
                 .put("type", "getAkashic")
@@ -284,20 +286,20 @@ public class LiveSocket extends Endpoint {
         this.chatSocket = chatSocket;
     }
 
-    public List<Quality> getAvailableQualities() {
+    public List<LiveQuality> getAvailableQualities() {
         return availableQualities;
     }
 
-    public void setAvailableQualities(List<Quality> availableQualities) {
+    public void setAvailableQualities(List<LiveQuality> availableQualities) {
         this.availableQualities = availableQualities;
     }
 
-    public Quality getQuality() {
-        return quality;
+    public LiveQuality getQuality() {
+        return liveQuality;
     }
 
-    public void setQuality(Quality quality) {
-        this.quality = quality;
+    public void setQuality(LiveQuality liveQuality) {
+        this.liveQuality = liveQuality;
     }
 
     public String getURI() {

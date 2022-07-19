@@ -1,13 +1,22 @@
 package me.koutachan.nicoutils.impl.builder;
 
 import me.koutachan.nicoutils.impl.NicoVideoInfo;
+import me.koutachan.nicoutils.impl.options.enums.video.VideoQuality;
 import me.koutachan.nicoutils.impl.options.enums.video.VideoType;
+import me.koutachan.nicoutils.impl.options.live.RequestSettings;
 import me.koutachan.nicoutils.impl.options.video.CommentSettings;
+import org.glassfish.grizzly.utils.Pair;
+
+import java.util.List;
+import java.util.Queue;
+import java.util.function.Consumer;
 
 public class NicoVideoBuilder {
 
     private boolean heartbeat;
     private String url;
+
+    private RequestSettings<NicoVideoBuilder> requestSettings = new RequestSettings<>(this);
 
     private CommentSettings commentSettings = new CommentSettings(this);
     private VideoType videoType = VideoType.HTTP;
@@ -68,6 +77,31 @@ public class NicoVideoBuilder {
      */
     public NicoVideoBuilder setVideoType(VideoType videoType) {
         this.videoType = videoType;
+
+        return this;
+    }
+
+    /**
+     * @deprecated
+     * この方式はおすすめできません
+     * <br>ニコニコサーバーへアクセスしてから可能な画質が分かるため
+     * <br>予想だけで画質を決定するのはいいことではないと思います
+     */
+    @Deprecated
+    private NicoVideoBuilder setVideoQuality(VideoQuality quality) {
+        return this;
+    }
+
+    /**
+     * ユーザーエージェントを設定できます
+     * @see RequestSettings#setAgent(String)
+     */
+    public RequestSettings<NicoVideoBuilder> getRequestSettings() {
+        return requestSettings;
+    }
+
+    public NicoVideoBuilder setRequestSettings(RequestSettings<NicoVideoBuilder> requestSettings) {
+        this.requestSettings = requestSettings;
 
         return this;
     }

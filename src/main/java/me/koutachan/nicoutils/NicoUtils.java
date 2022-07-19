@@ -37,4 +37,8 @@ public class NicoUtils {
     public static void addListener(Object obj) {
         Listener.addListener(obj);
     }
+
+    public static double getVersion() {
+        return 1.0;
+    }
 }
