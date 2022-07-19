@@ -3,13 +3,8 @@ package me.koutachan.nicoutils.impl.builder;
 import me.koutachan.nicoutils.impl.NicoVideoInfo;
 import me.koutachan.nicoutils.impl.options.enums.video.VideoQuality;
 import me.koutachan.nicoutils.impl.options.enums.video.VideoType;
-import me.koutachan.nicoutils.impl.options.live.RequestSettings;
+import me.koutachan.nicoutils.impl.options.RequestSettings;
 import me.koutachan.nicoutils.impl.options.video.CommentSettings;
-import org.glassfish.grizzly.utils.Pair;
-
-import java.util.List;
-import java.util.Queue;
-import java.util.function.Consumer;
 
 public class NicoVideoBuilder {
 

@@ -1,4 +1,4 @@
-package me.koutachan.nicoutils.impl.options.live;
+package me.koutachan.nicoutils.impl.options;
 
 import me.koutachan.nicoutils.impl.util.HardCodeUtils;
 

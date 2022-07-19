@@ -3,7 +3,7 @@ package me.koutachan.nicoutils.impl.builder;
 import me.koutachan.nicoutils.impl.NicoLiveInfo;
 import me.koutachan.nicoutils.impl.options.enums.live.Latency;
 import me.koutachan.nicoutils.impl.options.enums.live.LiveQuality;
-import me.koutachan.nicoutils.impl.options.live.RequestSettings;
+import me.koutachan.nicoutils.impl.options.RequestSettings;
 
 public class NicoLiveBuilder {
 
