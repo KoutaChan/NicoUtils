@@ -2,7 +2,6 @@ package me.koutachan.nicoutils.impl.websocket;
 
 import jakarta.websocket.*;
 import me.koutachan.nicoutils.impl.NicoLiveInfo;
-import me.koutachan.nicoutils.impl.NicoVideoInfo;
 import me.koutachan.nicoutils.impl.data.Statistics;
 import me.koutachan.nicoutils.impl.event.Listener;
 import me.koutachan.nicoutils.impl.event.tests.LiveEventListener;
@@ -24,7 +23,7 @@ public class LiveSocket extends Endpoint {
 
     private Session session;
 
-    private final NicoLiveInfo nicoLiveInfo;
+    private final NicoLiveInfo info;
 
     //普通30秒
     private int keepIntervalSeconds = 30;
@@ -43,20 +42,22 @@ public class LiveSocket extends Endpoint {
     private List<LiveQuality> availableQualities;
     private LiveQuality liveQuality;
 
-    private String uri, sync_uri;
+    private String uri, sync_uri, threadId;
 
     public LiveSocket(NicoLiveInfo liveInfo) {
         super();
 
-        this.nicoLiveInfo = liveInfo;
+        this.info = liveInfo;
     }
 
     public void onOpen(Session session, EndpointConfig config) {
         JSONObject quality = new JSONObject()
-                .put("quality", nicoLiveInfo.getBuilder().getQuality().getType())
+                .put("quality", info.getQuality().getType())
                 //他のタイプがあるか検証してもいいかもしれない
-                .put("protocol", "hls+fmp4")
-                .put("latency", nicoLiveInfo.getBuilder().getLatency().getType())
+                //high=hls only
+                //low= hls+mp4
+                .put("protocol", info.getLatency() == Latency.LOW ? "hls+mp4" : "hls")
+                .put("latency", info.getLatency().getType())
                 .put("chasePlay", false);
 
         JSONObject protocol = new JSONObject()
@@ -87,12 +88,12 @@ public class LiveSocket extends Endpoint {
         if (type.equalsIgnoreCase("ping")) {
             session.getAsyncRemote().sendText(new JSONObject().put("type", "pong").toString());
         } else if (type.equalsIgnoreCase("room")) {
-            if (nicoLiveInfo.getBuilder().isOpenChatSocket()) {
+            if (info.getBuilder().isOpenChatSocket()) {
                 URI commentServer = URI.create(data.getJSONObject("messageServer").getString("uri"));
 
-                String threadId = data.getString("threadId");
+                threadId = data.getString("threadId");
 
-                chatSocket = new LiveChatSocket(nicoLiveInfo, threadId);
+                chatSocket = new LiveChatSocket(info, threadId);
                 chatSocket.start(commentServer);
             }
         } else if (type.equalsIgnoreCase("seat")) {
@@ -112,7 +113,7 @@ public class LiveSocket extends Endpoint {
             availableQualities = QualityUtils.getAllowedQuality(data);
             liveQuality = QualityUtils.getQualityEnum(data.getString("quality"));
 
-            nicoLiveInfo.call();
+            info.call();
         } else if (type.equalsIgnoreCase("schedule")) {
 
             //beta...
@@ -180,7 +181,11 @@ public class LiveSocket extends Endpoint {
     }
 
     public void stopKeepInterval() {
-        if (thread != null && !thread.isInterrupted() && thread.isAlive()) thread.interrupt();
+        if (thread != null && !thread.isInterrupted() && thread.isAlive()) {
+            thread.interrupt();
+
+            thread = null;
+        }
     }
 
     public void sendChange(LiveQuality liveQuality, Latency latency, final boolean chasePlay) {
@@ -216,9 +221,17 @@ public class LiveSocket extends Endpoint {
 
             stopKeepInterval();
 
-            session.close();
+            if (session != null && session.isOpen()) {
+                session.close();
+                session = null;
+            }
 
-            chatSocket.stop();
+            info.stop();
+
+            if (chatSocket != null) {
+                chatSocket.stop();
+                chatSocket = null;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -235,7 +248,7 @@ public class LiveSocket extends Endpoint {
                  * ヘッダーが必要です ヘッダーがない場合エラーが吐かれます
                  */
                 public void beforeRequest(Map<String, List<String>> headers) {
-                   headers.put("User-Agent", Collections.singletonList("User-Agent: " + nicoLiveInfo.getBuilder().getRequestSettings().getAgent()));
+                   headers.put("User-Agent", Collections.singletonList(info.getBuilder().getRequestSettings().getAgent()));
                    headers.put("Accept-Language", Collections.singletonList("ja-JP,ja;q=0.9,en-US;q=0.8,en;q=0.7"));
                    headers.put("Host", Collections.singletonList("a.live2.nicovideo.jp"));
                    headers.put("Origin", Collections.singletonList("https://live.nicovideo.jp"));
@@ -260,6 +273,14 @@ public class LiveSocket extends Endpoint {
 
     public void setSession(Session session) {
         this.session = session;
+    }
+
+    public String getThreadId() {
+        return threadId;
+    }
+
+    public void setThreadId(String threadId) {
+        this.threadId = threadId;
     }
 
     public Disconnect getDisconnect() {
@@ -323,7 +344,8 @@ public class LiveSocket extends Endpoint {
     }
 
     public void setKeepIntervalSeconds(int keepIntervalSeconds) {
-        this.keepIntervalSeconds = keepIntervalSeconds;
+        if (keepIntervalSeconds >= 0) this.keepIntervalSeconds = keepIntervalSeconds;
+        else throw new IllegalStateException("keepIntervalSeconds is negative (" + keepIntervalSeconds + ")");
     }
 
     public Date getEnd() {

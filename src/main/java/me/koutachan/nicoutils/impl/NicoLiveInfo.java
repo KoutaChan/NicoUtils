@@ -3,34 +3,48 @@ package me.koutachan.nicoutils.impl;
 import me.koutachan.nicoutils.NicoUtils;
 import me.koutachan.nicoutils.impl.builder.NicoLiveBuilder;
 import me.koutachan.nicoutils.impl.options.enums.live.Latency;
+import me.koutachan.nicoutils.impl.options.enums.live.LiveQuality;
 import me.koutachan.nicoutils.impl.options.enums.live.PlatForm;
+import me.koutachan.nicoutils.impl.util.FileUtils;
 import me.koutachan.nicoutils.impl.websocket.LiveChatSocket;
 import me.koutachan.nicoutils.impl.websocket.LiveSocket;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Paths;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class NicoLiveInfo {
 
     public static void main(String[] args) {
-        NicoUtils.getLiveBuilder().setURL("https://live.nicovideo.jp/watch/lv337753075?ref=pc_userpage_nicorepo")
+        NicoUtils.getLiveBuilder().setURL("")
+                .setLatency(Latency.HIGH)
                 .create();
     }
 
     private NicoLiveBuilder builder;
+
+    private Latency latency;
+    private LiveQuality quality;
 
     private LiveSocket liveSocket = new LiveSocket(this);
 
     private long sequence = 0;
 
     private Thread thread;
+    private TimerTask task;
 
     public NicoLiveInfo(NicoLiveBuilder builder) {
         this.builder = builder;
+
+        this.quality = builder.getQuality();
+        this.latency = builder.getLatency();
 
         init();
     }
@@ -49,13 +63,15 @@ public class NicoLiveInfo {
 
             final boolean ended = webSocketURL.isEmpty();
 
-            if (ended) throw new IllegalStateException("already live ended. s=" + relive);
+            if (ended) {
+                throw new IllegalStateException("already live ended. s=" + relive);
+            }
 
             liveSocket.start(URI.create(webSocketURL));
 
             //デバッグ用
             while (true) {
-                System.out.println("begin: " + liveSocket.getBegin() + " start:" + liveSocket.getEnd());
+                //System.out.println("begin: " + liveSocket.getBegin() + " start:" + liveSocket.getEnd());
            }
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,10 +83,6 @@ public class NicoLiveInfo {
     public void call() {
         try {
             Document document = Jsoup.connect(this.liveSocket.getSyncURI())
-                    .header("sec-ch-ua-mobile", "?0")
-                    .header("sec-ch-ua-platform", PLATFORM)
-                    .header("Sec-Fetch-Dest", "empty")
-                    .header("Sec-Fetch-Site", "cross-site")
                     .header("User-Agent", builder.getRequestSettings().getAgent())
                     .ignoreContentType(true)
                     .get();
@@ -94,34 +106,80 @@ public class NicoLiveInfo {
         }
     }
 
+    public void callSequence() {
+        try {
+
+            String videoContentURL = latency == Latency.LOW ?
+                    getLiveSocket().getURI().replaceFirst("master.m3u8", "1/mp4/" + sequence + ".mp4")
+                    : getLiveSocket().getURI().replaceFirst("master.m3u8", "1/ts/" + sequence + ".ts");
+
+            //mp4 || ts ready!
+            Connection.Response video = Jsoup.connect(videoContentURL)
+                    .header("User-Agent", builder.getRequestSettings().getAgent())
+                    .ignoreContentType(true)
+                    .method(Connection.Method.GET)
+                    .execute();
+
+            new Thread(() -> {
+                FileUtils.downloadFileFromURL(videoContentURL, Paths.get("", "test",sequence + ".ts").toFile());
+            }).start();
+
+            sequence++;
+
+            String m3u8URL = latency == Latency.LOW ?
+                    getLiveSocket().getURI().replaceFirst("master", "1/mp4/playlist") + "&_poll_=" + sequence
+                    : getLiveSocket().getURI().replaceFirst("master.m3u8", "1/ts/playlist.m3u8");
+
+            //m3u8 ready!
+            Connection.Response m3u8 = Jsoup.connect(m3u8URL)
+                    .header("User-Agent", builder.getRequestSettings().getAgent())
+                    .ignoreContentType(true)
+                    .method(Connection.Method.GET)
+                    .execute();
+
+            System.out.println(m3u8.body());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void start() {
         stop();
 
         thread = new Thread(() -> {
-            try {
-                while (true) {
-                    Latency latency = builder.getLatency();
-
-                    if (latency == Latency.LOW) {
-
-                    } else {
-
+            task = new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        callSequence();
+                    } catch (Exception ex) {
+                        //();
                     }
-
-                    Thread.sleep(builder.getLatency() == Latency.LOW ? 2 * 1000L : 5 * 1000L);
-
-                    //TODO: call()
                 }
-            } catch (InterruptedException e) {
-                stop();
-            }
+            };
+
+            //重要な基盤なためTimerTaskで動かす
+            //Thread.sleep()だと信頼不足？
+            //low=5seconds
+            //high=1.5seconds
+            //m3u8を読み取って動かしてもいいかも
+            new Timer().scheduleAtFixedRate(task,0, latency == Latency.LOW ? 5000 : 1500);
+
         });
 
         thread.start();
     }
 
     public void stop() {
-        if (thread != null && !thread.isInterrupted() && thread.isAlive()) thread.interrupt();
+        if (task != null) {
+            task.cancel();
+            task = null;
+        }
+
+        if (thread != null && !thread.isInterrupted() && thread.isAlive()) {
+            thread.interrupt();
+            thread = null;
+        }
     }
 
     public NicoLiveBuilder getBuilder() {
@@ -146,5 +204,24 @@ public class NicoLiveInfo {
 
     public void setChatSocket(LiveChatSocket liveChatSocket) {
         liveSocket.setChatSocket(liveChatSocket);
+    }
+
+    /**
+     * ライブの遅延 詳しくは {@link NicoLiveBuilder#setLatency(Latency)} を視てください
+     */
+    public Latency getLatency() {
+        return latency;
+    }
+
+    public void setLatency(Latency latency) {
+        this.latency = latency;
+    }
+
+    public LiveQuality getQuality() {
+        return quality;
+    }
+
+    public void setQuality(LiveQuality quality) {
+        this.quality = quality;
     }
 }

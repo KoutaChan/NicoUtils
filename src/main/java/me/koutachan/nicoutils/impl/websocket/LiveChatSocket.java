@@ -19,12 +19,13 @@ public class LiveChatSocket extends Endpoint {
     private Session session;
 
     private final String threadId;
+    private URI URI;
 
     private Thread thread;
-    private NicoLiveInfo nicoLiveInfo;
+    private NicoLiveInfo info;
 
-    public LiveChatSocket(NicoLiveInfo nicoLiveInfo, String threadId) {
-        this.nicoLiveInfo = nicoLiveInfo;
+    public LiveChatSocket(NicoLiveInfo info, String threadId) {
+        this.info = info;
 
         this.threadId = threadId;
     }
@@ -99,14 +100,19 @@ public class LiveChatSocket extends Endpoint {
     }
 
     public void stopChatTimer() {
-        if (thread != null && !thread.isInterrupted() && thread.isAlive()) thread.interrupt();
+        if (thread != null && !thread.isInterrupted() && thread.isAlive()) {
+            thread.interrupt();
+        }
     }
 
     public void stop() {
         try {
             stopChatTimer();
 
-            session.close();
+            if (session != null && session.isOpen()) {
+                session.close();
+                session = null;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -114,6 +120,8 @@ public class LiveChatSocket extends Endpoint {
 
     public void start(URI URI) {
         try {
+            this.URI = URI;
+
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 
             ClientEndpointConfig.Builder configBuilder = ClientEndpointConfig.Builder.create();
@@ -123,7 +131,7 @@ public class LiveChatSocket extends Endpoint {
                  * ヘッダーが必要です ヘッダーがない場合エラーが吐かれます
                  */
                 public void beforeRequest(Map<String, List<String>> headers) {
-                    headers.put("User-Agent", Collections.singletonList("User-Agent: " + nicoLiveInfo.getBuilder().getRequestSettings().getAgent()));
+                    headers.put("User-Agent", Collections.singletonList(info.getBuilder().getRequestSettings().getAgent()));
                     headers.put("Accept-Language", Collections.singletonList("ja-JP,ja;q=0.9,en-US;q=0.8,en;q=0.7"));
                     headers.put("Host", Collections.singletonList("msgd.live2.nicovideo.jp"));
                     headers.put("Origin", Collections.singletonList("https://live.nicovideo.jp"));
@@ -149,5 +157,13 @@ public class LiveChatSocket extends Endpoint {
 
     public void setSession(Session session) {
         this.session = session;
+    }
+
+    public URI getURI() {
+        return URI;
+    }
+
+    public void setURI(java.net.URI URI) {
+        this.URI = URI;
     }
 }

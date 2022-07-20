@@ -56,7 +56,7 @@ public class NicoVideoInfo {
 
     public static void main(String[] args) {
         NicoVideoInfo info = NicoUtils.getVideoBuilder()
-                .setURL("https://www.nicovideo.jp/watch/sm39411572")
+                .setURL("http://www.nicovideo.jp/watch/nm14296458")
                 .setHeartBeat(true)
                 .setVideoType(VideoType.HTTP)
                 .create();
@@ -113,6 +113,7 @@ public class NicoVideoInfo {
                 Document commentDocument = Jsoup.connect(thread.getString("server") + "/api/thread")
                         .header("Content-Type", "application/json")
                         .header("Accept", "application/json")
+                        .header("User-Agent",  requestSettings.getAgent())
                         .requestBody(commentJson.toString())
                         .ignoreContentType(true)
                         .post();
@@ -191,7 +192,10 @@ public class NicoVideoInfo {
 
             init_call();
 
-            if (heartbeat) startHeartBeat();
+            if (heartbeat) {
+                startHeartBeat();
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
