@@ -55,8 +55,8 @@ public class LiveSocket extends Endpoint {
                 .put("quality", info.getQuality().getType())
                 //他のタイプがあるか検証してもいいかもしれない
                 //high=hls only
-                //low= hls+mp4
-                .put("protocol", info.getLatency() == Latency.LOW ? "hls+mp4" : "hls")
+                //low= hls+fmp4
+                .put("protocol", info.getLatency() == Latency.LOW ? "hls+fmp4" : "hls")
                 .put("latency", info.getLatency().getType())
                 .put("chasePlay", false);
 

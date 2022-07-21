@@ -17,13 +17,14 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class NicoLiveInfo {
 
     public static void main(String[] args) {
-        NicoUtils.getLiveBuilder().setURL("")
+        NicoUtils.getLiveBuilder().setURL("https://live.nicovideo.jp/watch/lv337806735?ref=live2gate")
                 .setLatency(Latency.HIGH)
                 .create();
     }
@@ -114,15 +115,14 @@ public class NicoLiveInfo {
                     : getLiveSocket().getURI().replaceFirst("master.m3u8", "1/ts/" + sequence + ".ts");
 
             //mp4 || ts ready!
+            //mp4は圧縮でもされているのかな？
             Connection.Response video = Jsoup.connect(videoContentURL)
                     .header("User-Agent", builder.getRequestSettings().getAgent())
                     .ignoreContentType(true)
                     .method(Connection.Method.GET)
                     .execute();
 
-            new Thread(() -> {
-                FileUtils.downloadFileFromURL(videoContentURL, Paths.get("", "test",sequence + ".ts").toFile());
-            }).start();
+            new Thread(() -> FileUtils.downloadFileFromURL(videoContentURL, Paths.get("", "test",sequence + ".ts").toFile())).start();
 
             sequence++;
 
@@ -139,6 +139,8 @@ public class NicoLiveInfo {
 
             System.out.println(m3u8.body());
         } catch (Exception e) {
+            //エラーが発生した場合
+            //またアクセスしてシークエンスを取得する予定
             e.printStackTrace();
         }
     }

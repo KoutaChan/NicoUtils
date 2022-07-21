@@ -1,4 +1,4 @@
-package me.koutachan.nicoutils.test;
+package me.koutachan.nicoutils.benchmark;
 
 import me.koutachan.nicoutils.NicoUtils;
 import me.koutachan.nicoutils.impl.NicoVideoInfo;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 @State(Scope.Thread)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class NicoDownloadFileTest {
+public class NicoDownloadFileBenchMark {
 
     private static File file = Paths.get("", "test.mp4").toFile();
 
@@ -27,7 +27,6 @@ public class NicoDownloadFileTest {
 
     @Benchmark
     public void run() {
-        System.out.println("aa");
 
         NicoVideoInfo info = NicoUtils.getVideoBuilder()
                 .setHeartBeat(true)
@@ -41,7 +40,7 @@ public class NicoDownloadFileTest {
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
-                .include(NicoDownloadFileTest.class.getSimpleName())
+                .include(NicoDownloadFileBenchMark.class.getSimpleName())
                 .forks(1)
                 .warmupTime(new TimeValue(5, TimeUnit.SECONDS))
                 .build();

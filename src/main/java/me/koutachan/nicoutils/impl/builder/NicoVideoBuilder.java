@@ -5,6 +5,7 @@ import me.koutachan.nicoutils.impl.options.enums.video.VideoQuality;
 import me.koutachan.nicoutils.impl.options.enums.video.VideoType;
 import me.koutachan.nicoutils.impl.options.RequestSettings;
 import me.koutachan.nicoutils.impl.options.video.CommentSettings;
+import me.koutachan.nicoutils.impl.options.LoginSettings;
 
 public class NicoVideoBuilder {
 
@@ -12,6 +13,7 @@ public class NicoVideoBuilder {
     private String url;
 
     private RequestSettings<NicoVideoBuilder> requestSettings = new RequestSettings<>(this);
+    private LoginSettings<NicoVideoBuilder> loginSettings = new LoginSettings<>(this, requestSettings);
 
     private CommentSettings commentSettings = new CommentSettings(this);
     private VideoType videoType = VideoType.HTTP;
@@ -97,6 +99,20 @@ public class NicoVideoBuilder {
 
     public NicoVideoBuilder setRequestSettings(RequestSettings<NicoVideoBuilder> requestSettings) {
         this.requestSettings = requestSettings;
+
+        return this;
+    }
+
+    /**
+     * ニコニコにログインするために必要
+     * <br>ログインしたい場合は {@link LoginSettings#login(String, String)} を使ってログインしてください
+     */
+    public LoginSettings<NicoVideoBuilder> getLoginSettings() {
+        return loginSettings;
+    }
+
+    public NicoVideoBuilder setLoginSettings(LoginSettings<NicoVideoBuilder> loginSettings) {
+        this.loginSettings = loginSettings;
 
         return this;
     }

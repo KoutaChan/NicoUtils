@@ -57,7 +57,6 @@ public class NicoVideoInfo {
     public static void main(String[] args) {
         NicoVideoInfo info = NicoUtils.getVideoBuilder()
                 .setURL("http://www.nicovideo.jp/watch/nm14296458")
-                .setHeartBeat(true)
                 .setVideoType(VideoType.HTTP)
                 .create();
 

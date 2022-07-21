@@ -2,7 +2,6 @@ package me.koutachan.nicoutils.impl.options.enums.video;
 
 public enum VideoType {
     /**
-     *
      * @deprecated
      * - m3u8ではこのユーティリティは動かない可能性が高いです
      * - 変換をかけないと使えません、通常は {@link #HTTP} を使用してください
