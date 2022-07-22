@@ -54,17 +54,6 @@ public class NicoVideoInfo {
         init();
     }
 
-    public static void main(String[] args) {
-        NicoVideoInfo info = NicoUtils.getVideoBuilder()
-                .setURL("https://www.nicovideo.jp/watch/sm32048864")
-                .setVideoType(VideoType.HTTP)
-                .getLoginSettings()
-                .login("test", "test123")
-                .create();
-
-        System.out.println(info.getContentURL());
-    }
-
     private void init() {
         try {
             Document document = Jsoup.connect(url)

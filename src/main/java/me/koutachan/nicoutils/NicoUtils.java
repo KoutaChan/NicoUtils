@@ -8,7 +8,8 @@ import me.koutachan.nicoutils.impl.event.tests.LiveEventListener;
 public class NicoUtils {
 
     public static NicoVideoBuilder getVideoBuilder() {
-        return new NicoVideoBuilder();
+        throw new IllegalStateException("Not Support Yet");
+        //return new NicoVideoBuilder();
     }
 
     /**
@@ -35,7 +36,8 @@ public class NicoUtils {
      * <br> {@link LiveEventListener} のみです
      */
     public static void addListener(Object obj) {
-        Listener.addListener(obj);
+        throw new IllegalStateException("Not Support Yet");
+        //Listener.addListener(obj);
     }
 
     public static double getVersion() {

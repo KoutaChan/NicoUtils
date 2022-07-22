@@ -75,7 +75,7 @@ public class LiveSocket extends Endpoint {
         session.getAsyncRemote().sendText(sendJson.toString());
 
         //for tests
-        Listener.addListener(new LiveEventListener());
+        //Listener.addListener(new LiveEventListener());
     }
 
     public void onMessage(String message) {

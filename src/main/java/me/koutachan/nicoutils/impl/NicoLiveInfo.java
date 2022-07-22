@@ -4,6 +4,7 @@ import me.koutachan.nicoutils.NicoUtils;
 import me.koutachan.nicoutils.impl.builder.NicoLiveBuilder;
 import me.koutachan.nicoutils.impl.options.enums.live.Latency;
 import me.koutachan.nicoutils.impl.options.enums.live.LiveQuality;
+import me.koutachan.nicoutils.impl.util.FileUtils;
 import me.koutachan.nicoutils.impl.websocket.LiveChatSocket;
 import me.koutachan.nicoutils.impl.websocket.LiveSocket;
 import org.json.JSONArray;
@@ -14,15 +15,20 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class NicoLiveInfo {
 
     public static void main(String[] args) {
-        NicoUtils.getLiveBuilder().setURL("https://live.nicovideo.jp/watch/lv337809108?ref=live2gate")
+        NicoUtils.getLiveBuilder().setURL("https://live.nicovideo.jp/watch/lv337820779?ref=live2gate")
                 .setLatency(Latency.LOW)
                 .create();
+
+        while (true) {
+
+        }
     }
 
     private NicoLiveBuilder builder;
@@ -64,7 +70,7 @@ public class NicoLiveInfo {
             }
 
             liveSocket.start(URI.create(webSocketURL));
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -111,6 +117,8 @@ public class NicoLiveInfo {
                     .ignoreContentType(true)
                     .method(Connection.Method.GET)
                     .execute();
+
+            new Thread(() -> FileUtils.downloadFileFromURL(videoContentURL, Paths.get("", "test", sequence + ".mp4").toFile())).start();
 
             sequence++;
 
