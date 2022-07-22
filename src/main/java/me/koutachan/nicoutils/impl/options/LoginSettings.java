@@ -3,6 +3,7 @@ package me.koutachan.nicoutils.impl.options;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -47,7 +48,7 @@ public class LoginSettings<T> {
             addCookie(loginCookie);
 
             isLogin = true;
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
 

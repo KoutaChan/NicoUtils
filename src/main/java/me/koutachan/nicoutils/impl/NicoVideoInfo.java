@@ -56,8 +56,10 @@ public class NicoVideoInfo {
 
     public static void main(String[] args) {
         NicoVideoInfo info = NicoUtils.getVideoBuilder()
-                .setURL("http://www.nicovideo.jp/watch/nm14296458")
+                .setURL("https://www.nicovideo.jp/watch/sm32048864")
                 .setVideoType(VideoType.HTTP)
+                .getLoginSettings()
+                .login("test", "test123")
                 .create();
 
         System.out.println(info.getContentURL());
@@ -396,13 +398,17 @@ public class NicoVideoInfo {
 
     public void asyncDownload(File file, Consumer<NicoVideoInfo> v) {
         new Thread(() -> {
-            FileUtils.downloadFileFromURL(contentURL, file);
+            syncDownload(file);
 
             v.accept(this);
         }).start();
     }
 
     public void syncDownload(File file) {
-        FileUtils.downloadFileFromURL(contentURL, file);
+        if (videoType == VideoType.HTTP) {
+            FileUtils.downloadFileFromURL(contentURL, file);
+        } else {
+            throw new IllegalStateException("Not Supported Yet.");
+        }
     }
 }

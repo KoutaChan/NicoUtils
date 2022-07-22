@@ -4,8 +4,6 @@ import me.koutachan.nicoutils.NicoUtils;
 import me.koutachan.nicoutils.impl.builder.NicoLiveBuilder;
 import me.koutachan.nicoutils.impl.options.enums.live.Latency;
 import me.koutachan.nicoutils.impl.options.enums.live.LiveQuality;
-import me.koutachan.nicoutils.impl.options.enums.live.PlatForm;
-import me.koutachan.nicoutils.impl.util.FileUtils;
 import me.koutachan.nicoutils.impl.websocket.LiveChatSocket;
 import me.koutachan.nicoutils.impl.websocket.LiveSocket;
 import org.json.JSONArray;
@@ -16,16 +14,14 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class NicoLiveInfo {
 
     public static void main(String[] args) {
-        NicoUtils.getLiveBuilder().setURL("https://live.nicovideo.jp/watch/lv337806735?ref=live2gate")
-                .setLatency(Latency.HIGH)
+        NicoUtils.getLiveBuilder().setURL("https://live.nicovideo.jp/watch/lv337809108?ref=live2gate")
+                .setLatency(Latency.LOW)
                 .create();
     }
 
@@ -53,6 +49,7 @@ public class NicoLiveInfo {
 
     private void init() {
         try {
+            //todo: regexでニコニコのURLか確認する？
             Document document = Jsoup.connect(builder.getURL())
                     .get();
 
@@ -62,24 +59,15 @@ public class NicoLiveInfo {
 
             String webSocketURL = relive.getString("webSocketUrl");
 
-            final boolean ended = webSocketURL.isEmpty();
-
-            if (ended) {
+            if (webSocketURL.isEmpty()) {
                 throw new IllegalStateException("already live ended. s=" + relive);
             }
 
             liveSocket.start(URI.create(webSocketURL));
-
-            //デバッグ用
-            while (true) {
-                //System.out.println("begin: " + liveSocket.getBegin() + " start:" + liveSocket.getEnd());
-           }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-    private final String PLATFORM = PlatForm.WINDOWS.getPlatform();
 
     public void call() {
         try {
@@ -116,13 +104,13 @@ public class NicoLiveInfo {
 
             //mp4 || ts ready!
             //mp4は圧縮でもされているのかな？
+            System.out.println(videoContentURL);
+
             Connection.Response video = Jsoup.connect(videoContentURL)
                     .header("User-Agent", builder.getRequestSettings().getAgent())
                     .ignoreContentType(true)
                     .method(Connection.Method.GET)
                     .execute();
-
-            new Thread(() -> FileUtils.downloadFileFromURL(videoContentURL, Paths.get("", "test",sequence + ".ts").toFile())).start();
 
             sequence++;
 
@@ -136,12 +124,9 @@ public class NicoLiveInfo {
                     .ignoreContentType(true)
                     .method(Connection.Method.GET)
                     .execute();
-
-            System.out.println(m3u8.body());
         } catch (Exception e) {
-            //エラーが発生した場合
-            //またアクセスしてシークエンスを取得する予定
-            e.printStackTrace();
+            //reload!
+            call();
         }
     }
 
@@ -152,11 +137,7 @@ public class NicoLiveInfo {
             task = new TimerTask() {
                 @Override
                 public void run() {
-                    try {
-                        callSequence();
-                    } catch (Exception ex) {
-                        //();
-                    }
+                    callSequence();
                 }
             };
 
